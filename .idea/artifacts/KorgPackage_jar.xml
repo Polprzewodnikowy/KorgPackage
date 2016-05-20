@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="KorgPackage:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/KorgPackage_jar</output-path>
+    <root id="archive" name="KorgPackage.jar">
+      <element id="module-output" name="KorgPackage" />
+    </root>
+  </artifact>
+</component>
