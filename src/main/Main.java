@@ -1,4 +1,6 @@
-import korgpackage.*;
+import com.polprzewodnikowy.korgpkg.Chunk;
+import com.polprzewodnikowy.korgpkg.PackageReader;
+import com.polprzewodnikowy.korgpkg.PackageWriter;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +18,8 @@ public class Main {
                 path = args[1];
             PackageReader packageReader = new PackageReader(args[0]);
             List<Chunk> chunks = packageReader.load();
+            PackageWriter packageWriter = new PackageWriter(args[0] + ".test.pkg");
+            packageWriter.save(chunks);
             for (Chunk chunk: chunks) {
                 try {
                     chunk.export(path);

@@ -1,4 +1,4 @@
-package korgpackage;
+package com.polprzewodnikowy.korgpkg;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -34,6 +34,10 @@ public abstract class Chunk {
 
     }
 
+    public void save(RandomAccessFile writer) throws IOException {
+
+    }
+
     public void export(String path) throws IOException {
 
     }
@@ -48,6 +52,11 @@ public abstract class Chunk {
         while ((tmp = reader.readByte()) != 0)
             stringBuilder.append((char)tmp);
         return stringBuilder.toString();
+    }
+
+    protected void writeString(RandomAccessFile writer, String string) throws IOException {
+        writer.writeBytes(string);
+        writer.write(0);
     }
 
 }

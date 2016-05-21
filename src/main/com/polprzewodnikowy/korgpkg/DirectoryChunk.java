@@ -1,8 +1,10 @@
-package korgpackage;
+package com.polprzewodnikowy.korgpkg;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by korgeaux on 19.05.2016.
@@ -24,6 +26,20 @@ public class DirectoryChunk extends Chunk {
         permissions = Short.reverseBytes(reader.readShort());
         unknown2 = Short.reverseBytes(reader.readShort());
         name = readString(reader);
+    }
+
+    @Override
+    public void save(RandomAccessFile writer) throws IOException {
+        writer.writeInt(Integer.reverseBytes(id));
+        long offset = writer.getFilePointer();
+        writer.write(new byte[4]);
+        writer.writeInt(Integer.reverseBytes(unknown1));
+        writer.writeShort(Short.reverseBytes(permissions));
+        writer.writeShort(Short.reverseBytes(unknown2));
+        writeString(writer, name);
+        int size = (int)(writer.getFilePointer() - offset - 4);
+        writer.seek(offset);
+        writer.writeInt(Integer.reverseBytes(size));
     }
 
     @Override

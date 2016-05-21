@@ -1,4 +1,4 @@
-package korgpackage;
+package com.polprzewodnikowy.korgpkg;
 
 /**
  * Created by korgeaux on 19.05.2016.

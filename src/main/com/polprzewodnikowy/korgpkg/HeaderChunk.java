@@ -1,4 +1,4 @@
-package korgpackage;
+package com.polprzewodnikowy.korgpkg;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -24,7 +24,7 @@ public class HeaderChunk extends Chunk {
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         unknown = new byte[12];
-        reader.read(unknown, 0, 12); //some unknown bytes
+        reader.read(unknown, 0, 12);
         systemType1 = readString(reader);
         systemType2 = readString(reader);
         buildSystem = readString(reader);
@@ -32,6 +32,24 @@ public class HeaderChunk extends Chunk {
         time = readString(reader);
         packageType1 = readString(reader);
         packageType2 = readString(reader);
+    }
+
+    @Override
+    public void save(RandomAccessFile writer) throws IOException {
+        writer.writeInt(Integer.reverseBytes(id));
+        long offset = writer.getFilePointer();
+        writer.write(new byte[4]);
+        writer.write(unknown);
+        writeString(writer, systemType1);
+        writeString(writer, systemType2);
+        writeString(writer, buildSystem);
+        writeString(writer, date);
+        writeString(writer, time);
+        writeString(writer, packageType1);
+        writeString(writer, packageType2);
+        int size = (int)(writer.getFilePointer() - offset - 4);
+        writer.seek(offset);
+        writer.writeInt(Integer.reverseBytes(size));
     }
 
     @Override

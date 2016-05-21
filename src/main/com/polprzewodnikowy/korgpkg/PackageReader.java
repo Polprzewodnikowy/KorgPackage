@@ -1,4 +1,4 @@
-package korgpackage;
+package com.polprzewodnikowy.korgpkg;
 
 import java.io.File;
 import java.io.IOException;
