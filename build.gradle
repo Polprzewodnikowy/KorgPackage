@@ -1,0 +1,33 @@
+repositories {
+	mavenCentral()
+}
+
+apply plugin: 'java'
+
+dependencies {
+
+}
+
+sourceSets {
+	main.java.srcDirs 'src/main'
+	test.java.srcDirs 'src/test'
+}
+
+jar {
+	manifest.attributes 'Main-Class' : 'Main'
+}
+
+task run(type: JavaExec, dependsOn: classes) {
+	group 'Run'
+	description 'Run program.'
+	main 'Main'
+	classpath sourceSets.main.runtimeClasspath
+	args '../Pa600.pkg'
+}
+
+task runJar(type: Exec, dependsOn: jar) {
+	group 'Run'
+	description 'Run jar executable.'
+	executable 'java'
+	args '-jar', "$jar.archivePath", '../Pa600.pkg'
+}
