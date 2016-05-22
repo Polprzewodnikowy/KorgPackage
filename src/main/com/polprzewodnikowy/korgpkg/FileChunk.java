@@ -1,11 +1,15 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -26,6 +30,54 @@ public class FileChunk extends Chunk {
 
     public FileChunk() {
         id = FILE;
+        unknown1 = 0;
+        permissions = 0x0F00;
+        unknown2 = -1;
+        isCompressed = false;
+        name = "";
+        date = "";
+        time = "";
+        data = new byte[0];
+    }
+
+    public boolean getIsCompressed() {
+        return isCompressed;
+    }
+
+    public void setIsCompressed(boolean isCompressed) {
+        this.isCompressed = isCompressed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getDateTime() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+        Date tmpDate = new Date();
+        try {
+            tmpDate = simpleDateFormat.parse(date + " " + time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tmpDate;
+    }
+
+    public void setDateTime(Date date) {
+        this.date = String.format("%tM/%<td/%<ty", date);
+        this.time = String.format("%tH:%<tm", date);
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -139,12 +191,10 @@ public class FileChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path + name.substring(name.indexOf('/') + 1, name.lastIndexOf('/'));
-        String filePath = path + name.substring(name.indexOf('/') + 1);
-        new File(dirPath).mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        String tmpName = name.substring(name.indexOf('/') + 1);
+        Path tmpPath = Paths.get(path, tmpName);
+        tmpPath.getParent().toFile().mkdirs();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
     }

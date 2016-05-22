@@ -46,6 +46,10 @@ public abstract class Chunk {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     protected String readString(RandomAccessFile reader) throws IOException {
         byte tmp;
         StringBuilder stringBuilder = new StringBuilder();

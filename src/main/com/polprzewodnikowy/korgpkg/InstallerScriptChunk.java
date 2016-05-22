@@ -1,9 +1,10 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -18,6 +19,33 @@ public class InstallerScriptChunk extends Chunk {
 
     public InstallerScriptChunk() {
         id = INSTALLER_SCRIPT;
+        order = -1;
+        name = "";
+        data = new byte[0];
+    }
+
+    public short getOrder() {
+        return order;
+    }
+
+    public void setOrder(short order) {
+        this.order = order;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -50,14 +78,9 @@ public class InstallerScriptChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        if(path.length() > 0)
-            path = path + "/update/";
-        else
-            path = "update/";
-        String dirPath = path;
-        String filePath = path + name;
-        new File(dirPath).mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        Path tmpPath = Paths.get(path, "update", name);
+        tmpPath.getParent().toFile().mkdirs();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
     }

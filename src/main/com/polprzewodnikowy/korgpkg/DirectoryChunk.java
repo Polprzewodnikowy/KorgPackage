@@ -1,10 +1,9 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by korgeaux on 19.05.2016.
@@ -18,6 +17,18 @@ public class DirectoryChunk extends Chunk {
 
     public DirectoryChunk() {
         id = DIRECTORY;
+        unknown1 = 0;
+        permissions = 0x0F00;
+        unknown2 = -1;
+        name = "";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -44,10 +55,9 @@ public class DirectoryChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path + name.substring(name.indexOf('/') + 1);
-        new File(dirPath).mkdirs();
+        String tmpName = name.substring(name.indexOf('/') + 1);
+        Path tmpPath = Paths.get(path, tmpName);
+        tmpPath.toFile().mkdirs();
     }
 
 }

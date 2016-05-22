@@ -1,9 +1,10 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -17,6 +18,24 @@ public class RootFSChunk extends Chunk {
 
     public RootFSChunk() {
         id = ROOT_FS;
+        name = "";
+        data = new byte[0];
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -52,12 +71,10 @@ public class RootFSChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path + name.substring(name.indexOf('/') + 1, name.lastIndexOf('/'));
-        String filePath = path + name.substring(name.indexOf('/') + 1);
-        new File(dirPath).mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        String tmpName = name.substring(name.indexOf('/') + 1);
+        Path tmpPath = Paths.get(path, tmpName);
+        tmpPath.getParent().toFile().mkdirs();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
     }

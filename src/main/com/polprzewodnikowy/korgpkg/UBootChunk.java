@@ -1,9 +1,10 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -16,6 +17,15 @@ public class UBootChunk extends Chunk {
 
     public UBootChunk() {
         id = UBOOT;
+        data = new byte[0];
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -44,12 +54,9 @@ public class UBootChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path + "boot";
-        String filePath = path + "boot/UBoot";
-        new File(dirPath).mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        Path tmpPath = Paths.get(path, "boot", "UBoot");
+        tmpPath.getParent().toFile().mkdirs();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
     }

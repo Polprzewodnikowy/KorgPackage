@@ -1,6 +1,4 @@
-import com.polprzewodnikowy.korgpkg.Chunk;
-import com.polprzewodnikowy.korgpkg.PackageReader;
-import com.polprzewodnikowy.korgpkg.PackageWriter;
+import com.polprzewodnikowy.korgpkg.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,6 +7,7 @@ import java.util.List;
  * Created by korgeaux on 08.05.2016.
  */
 public class Main {
+
     public static void main(String[] args) {
         if (args.length >= 1) {
             String path;
@@ -18,8 +17,6 @@ public class Main {
                 path = args[1];
             PackageReader packageReader = new PackageReader(args[0]);
             List<Chunk> chunks = packageReader.load();
-            PackageWriter packageWriter = new PackageWriter(args[0] + ".test.pkg");
-            packageWriter.save(chunks);
             for (Chunk chunk: chunks) {
                 try {
                     chunk.export(path);
@@ -32,4 +29,5 @@ public class Main {
             System.out.println("\r\nUsage:\r\n\tKorgPackage package [export dir]");
         }
     }
+
 }

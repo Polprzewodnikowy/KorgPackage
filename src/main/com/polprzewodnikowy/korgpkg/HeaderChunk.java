@@ -2,6 +2,8 @@ package com.polprzewodnikowy.korgpkg;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by korgeaux on 08.05.2016.
@@ -19,6 +21,14 @@ public class HeaderChunk extends Chunk {
 
     public HeaderChunk() {
         id = HEADER;
+        unknown = new byte[12];
+        systemType1 = "";
+        systemType2 = "";
+        buildSystem = "";
+        date = "";
+        time = "";
+        packageType1 = "";
+        packageType2 = "";
     }
 
     @Override
@@ -54,12 +64,9 @@ public class HeaderChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path;
-        String filePath = path + "Header.txt";
-        new File(dirPath).mkdirs();
-        FileWriter fileWriter = new FileWriter(filePath);
+        Path tmpPath = Paths.get(path, "Header.txt");
+        tmpPath.getParent().toFile().mkdirs();
+        FileWriter fileWriter = new FileWriter(tmpPath.toFile());
         fileWriter.write(DatatypeConverter.printHexBinary(unknown) + "\r\n");
         fileWriter.write(systemType1 + "\r\n");
         fileWriter.write(systemType2 + "\r\n");

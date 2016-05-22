@@ -23,9 +23,14 @@ public class PackageWriter {
     }
 
     public void save(List<Chunk> chunks) {
+        chunks.sort((c1, c2) -> Integer.compare(c1.getId(), c2.getId()));
+
         RandomAccessFile writer = null;
 
         try {
+            if(file.exists())
+                file.delete();
+
             writer = new RandomAccessFile(file, "rw");
 
             writer.seek(16);

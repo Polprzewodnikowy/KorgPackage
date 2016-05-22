@@ -1,9 +1,10 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -16,6 +17,15 @@ public class KernelChunk extends Chunk {
 
     public KernelChunk(int id) {
         this.id = id;
+        data = new byte[0];
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -59,12 +69,9 @@ public class KernelChunk extends Chunk {
                 prefix = "";
                 break;
         }
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path + prefix;
-        String filePath = path + prefix + "/uImage";
-        new File(dirPath).mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        Path tmpPath = Paths.get(path, prefix, "uImage");
+        tmpPath.getParent().toFile().mkdirs();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
     }

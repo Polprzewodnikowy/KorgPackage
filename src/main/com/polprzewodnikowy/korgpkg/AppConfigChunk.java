@@ -1,9 +1,10 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -16,6 +17,15 @@ public class AppConfigChunk extends Chunk {
 
     public AppConfigChunk(int id) {
         this.id = id;
+        data = new byte[0];
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -64,12 +74,9 @@ public class AppConfigChunk extends Chunk {
                 name = "unknown-app.xml";
                 break;
         }
-        if(path.length() > 0)
-            path = path + "/";
-        String dirPath = path + prefix;
-        String filePath = path + prefix + "/" + name;
-        new File(dirPath).mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        Path tmpPath = Paths.get(path, prefix, name);
+        tmpPath.getParent().toFile().mkdirs();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
     }
