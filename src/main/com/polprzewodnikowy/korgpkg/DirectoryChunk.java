@@ -55,7 +55,7 @@ public class DirectoryChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        String tmpName = name.substring(name.indexOf('/') + 1);
+        String tmpName = name.charAt(0) == '/' ? name.substring(1) : name;
         Path tmpPath = Paths.get(path, tmpName);
         tmpPath.toFile().mkdirs();
     }
