@@ -54,7 +54,7 @@ public abstract class Chunk {
         byte tmp;
         StringBuilder stringBuilder = new StringBuilder();
         while ((tmp = reader.readByte()) != 0)
-            stringBuilder.append((char)tmp);
+            stringBuilder.append((char) tmp);
         return stringBuilder.toString();
     }
 

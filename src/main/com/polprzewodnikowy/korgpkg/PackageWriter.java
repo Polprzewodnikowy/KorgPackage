@@ -28,7 +28,7 @@ public class PackageWriter {
         RandomAccessFile writer = null;
 
         try {
-            if(file.exists())
+            if (file.exists())
                 file.delete();
 
             writer = new RandomAccessFile(file, "rw");
@@ -37,16 +37,16 @@ public class PackageWriter {
 
             int rem;
 
-            for (Chunk chunk: chunks) {
+            for (Chunk chunk : chunks) {
                 chunk.save(writer);
                 writer.seek(writer.length());
-                rem = (int)(writer.getFilePointer() % 4);
-                if(rem != 0)
+                rem = (int) (writer.getFilePointer() % 4);
+                if (rem != 0)
                     writer.write(new byte[4 - rem]);
             }
 
-            rem = (int)(writer.getFilePointer() % 4);
-            if(rem != 0)
+            rem = (int) (writer.getFilePointer() % 4);
+            if (rem != 0)
                 writer.write(new byte[4 - rem]);
 
             writer.seek(16);
@@ -70,7 +70,7 @@ public class PackageWriter {
             e.printStackTrace();
         } finally {
             try {
-                if(writer != null)
+                if (writer != null)
                     writer.close();
             } catch (IOException e) {
                 e.printStackTrace();

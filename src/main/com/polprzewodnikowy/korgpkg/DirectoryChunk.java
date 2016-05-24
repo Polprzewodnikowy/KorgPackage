@@ -48,7 +48,7 @@ public class DirectoryChunk extends Chunk {
         writer.writeShort(Short.reverseBytes(attributes));
         writer.writeShort(Short.reverseBytes(unknown2));
         writeString(writer, name);
-        int size = (int)(writer.getFilePointer() - offset - 4);
+        int size = (int) (writer.getFilePointer() - offset - 4);
         writer.seek(offset);
         writer.writeInt(Integer.reverseBytes(size));
     }

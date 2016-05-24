@@ -19,6 +19,9 @@ import java.util.zip.Inflater;
  */
 public class FileChunk extends Chunk {
 
+    public final static byte NO_COMPRESSION = 0;
+    public final static byte ZLIB_COMPRESSION = 1;
+
     int unknown1;
     short attributes;
     short unknown2;
@@ -102,9 +105,9 @@ public class FileChunk extends Chunk {
 
         data = new byte[dataSize];
 
-        if(compressionType == 0) {
+        if (compressionType == NO_COMPRESSION) {
             reader.read(data, 0, dataSize);
-        } else if(compressionType == 1) {
+        } else if (compressionType == ZLIB_COMPRESSION) {
             int index = 0;
             while (true) {
                 int blockType = Integer.reverseBytes(reader.readInt());
@@ -127,7 +130,7 @@ public class FileChunk extends Chunk {
 
                 index += uncompressedBlockSize;
                 int rem = compressedBlockSize % 4;
-                if(rem != 0)
+                if (rem != 0)
                     reader.skipBytes(4 - rem);
             }
         }
@@ -155,16 +158,16 @@ public class FileChunk extends Chunk {
         writeString(writer, name);
         writeString(writer, date);
         writeString(writer, time);
-        if(compressionType == 0) {
+
+        if (compressionType == NO_COMPRESSION) {
             writer.write(data);
-        } else if(compressionType == 1) {
+        } else if (compressionType == ZLIB_COMPRESSION) {
             int index = 0;
             int remain = data.length;
-            if(data.length > 0)
-            {
+            if (data.length > 0) {
                 do {
                     int blockSize;
-                    if(remain > 0x00100000) {
+                    if (remain > 0x00100000) {
                         blockSize = 0x00100000;
                     } else {
                         blockSize = remain;
@@ -181,7 +184,7 @@ public class FileChunk extends Chunk {
                     writer.write(compressed, 0, compressedBlockSize);
 
                     int rem = compressedBlockSize % 4;
-                    if(rem != 0)
+                    if (rem != 0)
                         writer.write(new byte[4 - rem]);
 
                     index += 0x00100000;
@@ -192,7 +195,7 @@ public class FileChunk extends Chunk {
             writer.writeInt(Integer.reverseBytes(0x00000000));
         }
 
-        int size = (int)(writer.getFilePointer() - offset - 4);
+        int size = (int) (writer.getFilePointer() - offset - 4);
         writer.seek(offset);
         writer.writeInt(Integer.reverseBytes(size));
     }

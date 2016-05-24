@@ -48,8 +48,7 @@ public class PackageReader {
 
             reader.seek(16);
 
-            while (reader.getFilePointer() < reader.length())
-            {
+            while (reader.getFilePointer() < reader.length()) {
                 int id = Integer.reverseBytes(reader.readInt());
                 int size = Integer.reverseBytes(reader.readInt());
                 long pos = reader.getFilePointer();
@@ -124,7 +123,7 @@ public class PackageReader {
 
                 long offset = pos + size;
                 long rem = offset % 4;
-                if(rem != 0)
+                if (rem != 0)
                     offset += 4 - rem;
                 reader.seek(offset);
             }

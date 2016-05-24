@@ -57,7 +57,7 @@ public class HeaderChunk extends Chunk {
         writeString(writer, time);
         writeString(writer, packageType1);
         writeString(writer, packageType2);
-        int size = (int)(writer.getFilePointer() - offset - 4);
+        int size = (int) (writer.getFilePointer() - offset - 4);
         writer.seek(offset);
         writer.writeInt(Integer.reverseBytes(size));
     }
