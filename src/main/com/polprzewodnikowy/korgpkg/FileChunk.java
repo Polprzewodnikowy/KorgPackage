@@ -52,8 +52,8 @@ public class FileChunk extends Chunk {
         return compressionType;
     }
 
-    public void setCompressionType(byte isCompressed) {
-        this.compressionType = isCompressed;
+    public void setCompressionType(byte compressionType) {
+        this.compressionType = compressionType;
     }
 
     public String getName() {
