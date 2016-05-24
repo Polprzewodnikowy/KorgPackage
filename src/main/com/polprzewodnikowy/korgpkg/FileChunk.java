@@ -20,9 +20,9 @@ import java.util.zip.Inflater;
 public class FileChunk extends Chunk {
 
     int unknown1;
-    short permissions;
+    short attributes;
     short unknown2;
-    boolean isCompressed;
+    byte compressionType;
     String name;
     String date;
     String time;
@@ -31,21 +31,29 @@ public class FileChunk extends Chunk {
     public FileChunk() {
         id = FILE;
         unknown1 = 0;
-        permissions = 0x0F00;
+        attributes = 0x7000;
         unknown2 = -1;
-        isCompressed = false;
+        compressionType = 0;
         name = "";
         date = "";
         time = "";
         data = new byte[0];
     }
 
-    public boolean getIsCompressed() {
-        return isCompressed;
+    public short getAttributes() {
+        return attributes;
     }
 
-    public void setIsCompressed(boolean isCompressed) {
-        this.isCompressed = isCompressed;
+    public void setAttributes(short attributes) {
+        this.attributes = attributes;
+    }
+
+    public byte getIsCompressed() {
+        return compressionType;
+    }
+
+    public void setIsCompressed(byte isCompressed) {
+        this.compressionType = isCompressed;
     }
 
     public String getName() {
@@ -84,19 +92,19 @@ public class FileChunk extends Chunk {
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         unknown1 = Integer.reverseBytes(reader.readInt());
-        permissions = Short.reverseBytes(reader.readShort());
+        attributes = Short.reverseBytes(reader.readShort());
         unknown2 = Short.reverseBytes(reader.readShort());
         int dataSize = Integer.reverseBytes(reader.readInt());
-        isCompressed = reader.readBoolean();
+        compressionType = reader.readByte();
         name = readString(reader);
         date = readString(reader);
         time = readString(reader);
 
         data = new byte[dataSize];
 
-        if(!isCompressed) {
+        if(compressionType == 0) {
             reader.read(data, 0, dataSize);
-        } else {
+        } else if(compressionType == 1) {
             int index = 0;
             while (true) {
                 int blockType = Integer.reverseBytes(reader.readInt());
@@ -140,14 +148,16 @@ public class FileChunk extends Chunk {
         writer.write(new byte[4]);
         writer.write(hash);
         writer.writeInt(Integer.reverseBytes(unknown1));
-        writer.writeShort(Short.reverseBytes(permissions));
+        writer.writeShort(Short.reverseBytes(attributes));
         writer.writeShort(Short.reverseBytes(unknown2));
         writer.writeInt(Integer.reverseBytes(data.length));
-        writer.writeBoolean(isCompressed);
+        writer.writeByte(compressionType);
         writeString(writer, name);
         writeString(writer, date);
         writeString(writer, time);
-        if(isCompressed) {
+        if(compressionType == 0) {
+            writer.write(data);
+        } else if(compressionType == 1) {
             int index = 0;
             int remain = data.length;
             if(data.length > 0)
@@ -180,8 +190,6 @@ public class FileChunk extends Chunk {
             }
             writer.writeInt(Integer.reverseBytes(0x00000101));
             writer.writeInt(Integer.reverseBytes(0x00000000));
-        } else {
-            writer.write(data);
         }
 
         int size = (int)(writer.getFilePointer() - offset - 4);

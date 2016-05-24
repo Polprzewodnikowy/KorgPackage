@@ -54,7 +54,7 @@ public class UBootChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        Path tmpPath = Paths.get(path, "boot", "UBoot");
+        Path tmpPath = Paths.get(path, "boot", "u-boot.bin");
         tmpPath.getParent().toFile().mkdirs();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);

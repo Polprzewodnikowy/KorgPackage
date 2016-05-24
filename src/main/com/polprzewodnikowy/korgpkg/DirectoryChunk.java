@@ -11,14 +11,14 @@ import java.nio.file.Paths;
 public class DirectoryChunk extends Chunk {
 
     int unknown1;
-    short permissions;
+    short attributes;
     short unknown2;
     String name;
 
     public DirectoryChunk() {
         id = DIRECTORY;
         unknown1 = 0;
-        permissions = 0x0F00;
+        attributes = 0x7000;
         unknown2 = -1;
         name = "";
     }
@@ -34,7 +34,7 @@ public class DirectoryChunk extends Chunk {
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         unknown1 = Integer.reverseBytes(reader.readInt());
-        permissions = Short.reverseBytes(reader.readShort());
+        attributes = Short.reverseBytes(reader.readShort());
         unknown2 = Short.reverseBytes(reader.readShort());
         name = readString(reader);
     }
@@ -45,7 +45,7 @@ public class DirectoryChunk extends Chunk {
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
         writer.writeInt(Integer.reverseBytes(unknown1));
-        writer.writeShort(Short.reverseBytes(permissions));
+        writer.writeShort(Short.reverseBytes(attributes));
         writer.writeShort(Short.reverseBytes(unknown2));
         writeString(writer, name);
         int size = (int)(writer.getFilePointer() - offset - 4);
