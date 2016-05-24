@@ -48,11 +48,11 @@ public class FileChunk extends Chunk {
         this.attributes = attributes;
     }
 
-    public byte getIsCompressed() {
+    public byte getCompressionType() {
         return compressionType;
     }
 
-    public void setIsCompressed(byte isCompressed) {
+    public void setCompressionType(byte isCompressed) {
         this.compressionType = isCompressed;
     }
 
