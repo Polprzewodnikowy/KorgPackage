@@ -32,6 +32,14 @@ public class HeaderChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " HeaderChunk]: ");
+        str.append(systemType1 + " " + date + " " + time);
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         unknown = new byte[12];
         reader.read(unknown, 0, 12);

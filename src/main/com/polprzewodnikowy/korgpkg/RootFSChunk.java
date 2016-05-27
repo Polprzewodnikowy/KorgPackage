@@ -39,6 +39,14 @@ public class RootFSChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " RootFSChunk]: ");
+        str.append(name);
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         reader.skipBytes(4);

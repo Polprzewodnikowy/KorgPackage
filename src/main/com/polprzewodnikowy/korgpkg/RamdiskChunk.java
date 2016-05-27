@@ -29,6 +29,14 @@ public class RamdiskChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " RamdiskChunk]: ");
+        str.append(getName() + " ramdisk");
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = size - 16;
@@ -54,23 +62,34 @@ public class RamdiskChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        String prefix;
-        switch (id) {
-            case UPDATE_RAMDISK:
-                prefix = "update";
-                break;
-            case SERVICE_RAMDISK:
-                prefix = "service";
-                break;
-            default:
-                prefix = "";
-                break;
-        }
+        String prefix = getPrefix();
         Path tmpPath = Paths.get(path, prefix, "ramdisk.gz");
         tmpPath.getParent().toFile().mkdirs();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
+    }
+
+    private String getName() {
+        switch (id) {
+            case UPDATE_RAMDISK:
+                return "update";
+            case SERVICE_RAMDISK:
+                return "service";
+            default:
+                return "unknown-ramdisk";
+        }
+    }
+
+    private String getPrefix() {
+        switch (id) {
+            case UPDATE_RAMDISK:
+                return "update";
+            case SERVICE_RAMDISK:
+                return "service";
+            default:
+                return "";
+        }
     }
 
 }

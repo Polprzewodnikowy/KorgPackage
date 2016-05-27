@@ -49,6 +49,14 @@ public class InstallerScriptChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " InstallerScriptChunk]: ");
+        str.append(name + " | " + order);
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         order = Short.reverseBytes(reader.readShort());

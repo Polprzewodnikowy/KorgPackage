@@ -9,4 +9,12 @@ public class LinkChunk extends Chunk {
         id = LINK;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " LinkChunk]: ");
+        str.append("???");
+        return str.toString();
+    }
+
 }

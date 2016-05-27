@@ -29,6 +29,14 @@ public class UBootChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " UBootChunk]: ");
+        str.append("u-boot.bin");
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = size - 16;

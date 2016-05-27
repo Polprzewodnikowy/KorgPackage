@@ -30,6 +30,13 @@ public abstract class Chunk {
 
     int id;
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " UnknownChunk]: unknown");
+        return str.toString();
+    }
+
     public void load(RandomAccessFile reader, int size) throws IOException {
 
     }

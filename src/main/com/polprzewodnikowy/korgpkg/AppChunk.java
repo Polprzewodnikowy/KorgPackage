@@ -29,6 +29,14 @@ public class AppChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " AppChunk]: ");
+        str.append(getName());
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = size - 16;
@@ -54,31 +62,39 @@ public class AppChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        String prefix;
-        String name;
-        switch (id) {
-            case UPDATE_INSTALLER_APP:
-                prefix = "update";
-                name = "lfo-pkg-install";
-                break;
-            case SERVICE_APP:
-                prefix = "service";
-                name = "lfo-service";
-                break;
-            case UPDATE_LAUNCHER_APP:
-                prefix = "service";
-                name = "lfo-pkg-launcher";
-                break;
-            default:
-                prefix = "";
-                name = "unknown-app";
-                break;
-        }
+        String prefix = getPrefix();
+        String name = getName();
         Path tmpPath = Paths.get(path, prefix, name);
         tmpPath.getParent().toFile().mkdirs();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
+    }
+
+    private String getName() {
+        switch (id) {
+            case UPDATE_INSTALLER_APP:
+                return "lfo-pkg-install";
+            case SERVICE_APP:
+                return "lfo-service";
+            case UPDATE_LAUNCHER_APP:
+                return "lfo-pkg-launcher";
+            default:
+                return "unknown-app";
+        }
+    }
+
+    private String getPrefix() {
+        switch (id) {
+            case UPDATE_INSTALLER_APP:
+                return "update";
+            case SERVICE_APP:
+                return "service";
+            case UPDATE_LAUNCHER_APP:
+                return "service";
+            default:
+                return "";
+        }
     }
 
 }

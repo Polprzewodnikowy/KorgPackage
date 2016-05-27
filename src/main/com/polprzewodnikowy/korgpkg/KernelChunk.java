@@ -29,6 +29,14 @@ public class KernelChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " KernelChunk]: ");
+        str.append(getName() + " kernel");
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = size - 16;
@@ -54,26 +62,38 @@ public class KernelChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        String prefix;
-        switch (id) {
-            case UPDATE_KERNEL:
-                prefix = "update";
-                break;
-            case SERVICE_KERNEL:
-                prefix = "service";
-                break;
-            case USER_KERNEL:
-                prefix = "kernel";
-                break;
-            default:
-                prefix = "";
-                break;
-        }
+        String prefix = getPrefix();
         Path tmpPath = Paths.get(path, prefix, "uImage");
         tmpPath.getParent().toFile().mkdirs();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
+    }
+
+    private String getName() {
+        switch (id) {
+            case UPDATE_KERNEL:
+                return "update";
+            case SERVICE_KERNEL:
+                return "service";
+            case USER_KERNEL:
+                return "user";
+            default:
+                return "unknown-kernel";
+        }
+    }
+
+    private String getPrefix() {
+        switch (id) {
+            case UPDATE_KERNEL:
+                return "update";
+            case SERVICE_KERNEL:
+                return "service";
+            case USER_KERNEL:
+                return "kernel";
+            default:
+                return "";
+        }
     }
 
 }

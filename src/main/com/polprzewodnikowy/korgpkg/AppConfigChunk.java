@@ -29,6 +29,14 @@ public class AppConfigChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " AppConfigChunk]: ");
+        str.append(getName());
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = size - 16;
@@ -54,31 +62,39 @@ public class AppConfigChunk extends Chunk {
 
     @Override
     public void export(String path) throws IOException {
-        String prefix;
-        String name;
-        switch (id) {
-            case UPDATE_INSTALLER_APP_CONFIG:
-                prefix = "update";
-                name = "lfo-pkg-install.xml";
-                break;
-            case SERVICE_APP_CONFIG:
-                prefix = "service";
-                name = "lfo-service.xml";
-                break;
-            case UPDATE_LAUNCHER_APP_CONFIG:
-                prefix = "service";
-                name = "lfo-pkg-launcher.xml";
-                break;
-            default:
-                prefix = "";
-                name = "unknown-app.xml";
-                break;
-        }
+        String prefix = getPrefix();
+        String name = getName();
         Path tmpPath = Paths.get(path, prefix, name);
         tmpPath.getParent().toFile().mkdirs();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
         fileOutputStream.write(data);
         fileOutputStream.close();
+    }
+
+    private String getName() {
+        switch (id) {
+            case UPDATE_INSTALLER_APP_CONFIG:
+                return "lfo-pkg-install.xml";
+            case SERVICE_APP_CONFIG:
+                return "lfo-service.xml";
+            case UPDATE_LAUNCHER_APP_CONFIG:
+                return "lfo-pkg-launcher.xml";
+            default:
+                return "unknown-app.xml";
+        }
+    }
+
+    private String getPrefix() {
+        switch (id) {
+            case UPDATE_INSTALLER_APP_CONFIG:
+                return "update";
+            case SERVICE_APP_CONFIG:
+                return "service";
+            case UPDATE_LAUNCHER_APP_CONFIG:
+                return "service";
+            default:
+                return "";
+        }
     }
 
 }

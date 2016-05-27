@@ -19,12 +19,16 @@ import java.util.zip.Inflater;
  */
 public class FileChunk extends Chunk {
 
-    public final static byte NO_COMPRESSION = 0;
-    public final static byte ZLIB_COMPRESSION = 1;
+    public final static byte COMPRESSION_RAW = 0;
+    public final static byte COMPRESSION_ZLIB = 1;
 
-    int unknown1;
+    public final static int ATTR_ARCHIVE = 0x1000;
+    public final static int ATTR_READ_ONLY = 0x2000;
+    public final static int ATTR_SYSTEM = 0x4000;
+    public final static int ATTR_HIDDEN = 0x8000;
+
     short attributes;
-    short unknown2;
+    short order;
     byte compressionType;
     String name;
     String date;
@@ -33,22 +37,29 @@ public class FileChunk extends Chunk {
 
     public FileChunk() {
         id = FILE;
-        unknown1 = 0;
-        attributes = 0x7000;
-        unknown2 = -1;
-        compressionType = 0;
+        attributes = ATTR_ARCHIVE | ATTR_READ_ONLY | ATTR_SYSTEM;
+        order = -1;
+        compressionType = COMPRESSION_RAW;
         name = "";
         date = "";
         time = "";
         data = new byte[0];
     }
 
-    public short getAttributes() {
+    public int getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(short attributes) {
-        this.attributes = attributes;
+    public void setAttributes(int attributes) {
+        this.attributes = (short) attributes;
+    }
+
+    public short getOrder() {
+        return order;
+    }
+
+    public void setOrder(short order) {
+        this.order = order;
     }
 
     public byte getCompressionType() {
@@ -79,8 +90,8 @@ public class FileChunk extends Chunk {
     }
 
     public void setDateTime(Date date) {
-        this.date = String.format("%tM/%<td/%<ty", date);
-        this.time = String.format("%tH:%<tm", date);
+        this.date = String.format("%tm/%<td/%<ty", date);
+        this.time = String.format("%tH:%<tM", date);
     }
 
     public void setData(byte[] data) {
@@ -92,11 +103,33 @@ public class FileChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " FileChunk]: ");
+        str.append(name + " | " + date + " " + time + " | [");
+        if ((attributes & ATTR_ARCHIVE) == ATTR_ARCHIVE)
+            str.append("A");
+        if ((attributes & ATTR_READ_ONLY) == ATTR_READ_ONLY)
+            str.append("R");
+        if ((attributes & ATTR_SYSTEM) == ATTR_SYSTEM)
+            str.append("S");
+        if ((attributes & ATTR_HIDDEN) == ATTR_HIDDEN)
+            str.append("H");
+        str.append("] | ");
+        if (compressionType == COMPRESSION_RAW)
+            str.append("RAW");
+        else if (compressionType == COMPRESSION_ZLIB)
+            str.append("ZLIB");
+        str.append(" | " + order);
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
-        unknown1 = Integer.reverseBytes(reader.readInt());
+        reader.skipBytes(4);
         attributes = Short.reverseBytes(reader.readShort());
-        unknown2 = Short.reverseBytes(reader.readShort());
+        order = Short.reverseBytes(reader.readShort());
         int dataSize = Integer.reverseBytes(reader.readInt());
         compressionType = reader.readByte();
         name = readString(reader);
@@ -105,9 +138,9 @@ public class FileChunk extends Chunk {
 
         data = new byte[dataSize];
 
-        if (compressionType == NO_COMPRESSION) {
+        if (compressionType == COMPRESSION_RAW) {
             reader.read(data, 0, dataSize);
-        } else if (compressionType == ZLIB_COMPRESSION) {
+        } else if (compressionType == COMPRESSION_ZLIB) {
             int index = 0;
             while (true) {
                 int blockType = Integer.reverseBytes(reader.readInt());
@@ -150,18 +183,18 @@ public class FileChunk extends Chunk {
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
         writer.write(hash);
-        writer.writeInt(Integer.reverseBytes(unknown1));
+        writer.write(new byte[4]);
         writer.writeShort(Short.reverseBytes(attributes));
-        writer.writeShort(Short.reverseBytes(unknown2));
+        writer.writeShort(Short.reverseBytes(order));
         writer.writeInt(Integer.reverseBytes(data.length));
         writer.writeByte(compressionType);
         writeString(writer, name);
         writeString(writer, date);
         writeString(writer, time);
 
-        if (compressionType == NO_COMPRESSION) {
+        if (compressionType == COMPRESSION_RAW) {
             writer.write(data);
-        } else if (compressionType == ZLIB_COMPRESSION) {
+        } else if (compressionType == COMPRESSION_ZLIB) {
             int index = 0;
             int remain = data.length;
             if (data.length > 0) {

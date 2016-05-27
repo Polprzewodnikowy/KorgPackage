@@ -10,17 +10,36 @@ import java.nio.file.Paths;
  */
 public class DirectoryChunk extends Chunk {
 
-    int unknown1;
+    public final static int ATTR_ARCHIVE = 0x1000;
+    public final static int ATTR_READ_ONLY = 0x2000;
+    public final static int ATTR_SYSTEM = 0x4000;
+    public final static int ATTR_HIDDEN = 0x8000;
+
     short attributes;
-    short unknown2;
+    short order;
     String name;
 
     public DirectoryChunk() {
         id = DIRECTORY;
-        unknown1 = 0;
-        attributes = 0x7000;
-        unknown2 = -1;
+        attributes = ATTR_ARCHIVE | ATTR_READ_ONLY | ATTR_SYSTEM;
+        order = -1;
         name = "";
+    }
+
+    public int getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(int attributes) {
+        this.attributes = (short) attributes;
+    }
+
+    public short getOrder() {
+        return order;
+    }
+
+    public void setOrder(short order) {
+        this.order = order;
     }
 
     public String getName() {
@@ -32,10 +51,27 @@ public class DirectoryChunk extends Chunk {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[" + id + " DirectoryChunk]: ");
+        str.append(name + " | [");
+        if ((attributes & ATTR_ARCHIVE) == ATTR_ARCHIVE)
+            str.append("A");
+        if ((attributes & ATTR_READ_ONLY) == ATTR_READ_ONLY)
+            str.append("R");
+        if ((attributes & ATTR_SYSTEM) == ATTR_SYSTEM)
+            str.append("S");
+        if ((attributes & ATTR_HIDDEN) == ATTR_HIDDEN)
+            str.append("H");
+        str.append("] | " + order);
+        return str.toString();
+    }
+
+    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
-        unknown1 = Integer.reverseBytes(reader.readInt());
+        reader.skipBytes(4);
         attributes = Short.reverseBytes(reader.readShort());
-        unknown2 = Short.reverseBytes(reader.readShort());
+        order = Short.reverseBytes(reader.readShort());
         name = readString(reader);
     }
 
@@ -44,9 +80,9 @@ public class DirectoryChunk extends Chunk {
         writer.writeInt(Integer.reverseBytes(id));
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
-        writer.writeInt(Integer.reverseBytes(unknown1));
+        writer.write(new byte[4]);
         writer.writeShort(Short.reverseBytes(attributes));
-        writer.writeShort(Short.reverseBytes(unknown2));
+        writer.writeShort(Short.reverseBytes(order));
         writeString(writer, name);
         int size = (int) (writer.getFilePointer() - offset - 4);
         writer.seek(offset);
