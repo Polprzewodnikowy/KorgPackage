@@ -1,8 +1,7 @@
 package com.polprzewodnikowy.korgpkg;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -14,6 +13,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 /**
  * Created by korgeaux on 09.05.2016.
  */
@@ -22,28 +23,56 @@ public class FileChunk extends Chunk {
     public final static byte COMPRESSION_RAW = 0;
     public final static byte COMPRESSION_ZLIB = 1;
 
-    public final static int ATTR_ARCHIVE = 0x1000;
-    public final static int ATTR_READ_ONLY = 0x2000;
-    public final static int ATTR_SYSTEM = 0x4000;
-    public final static int ATTR_HIDDEN = 0x8000;
+    public final static int ATTR_VFAT_ARCHIVE = 0x1000;
+    public final static int ATTR_VFAT_READONLY = 0x2000;
+    public final static int ATTR_VFAT_SYSTEM = 0x4000;
+    public final static int ATTR_VFAT_HIDDEN = 0x8000;
 
+    public final static int ATTR_EXT3_DONT_CHANGE = 0xFFFF;
+
+    File tmpFile;
+
+    short group;
+    short owner;
     short attributes;
     short order;
     byte compressionType;
     String name;
     String date;
     String time;
-    byte[] data;
 
     public FileChunk() {
         id = FILE;
-        attributes = ATTR_ARCHIVE | ATTR_READ_ONLY | ATTR_SYSTEM;
+        group = 0;
+        owner = 0;
+        attributes = ATTR_VFAT_ARCHIVE | ATTR_VFAT_READONLY | ATTR_VFAT_SYSTEM;
         order = -1;
         compressionType = COMPRESSION_RAW;
         name = "";
         date = "";
         time = "";
-        data = new byte[0];
+        try {
+            tmpFile = Files.createTempFile("", ".FileChunk").toFile();
+            tmpFile.deleteOnExit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public short getGroup() {
+        return group;
+    }
+
+    public void setGroup(short group) {
+        this.group = group;
+    }
+
+    public short getOwner() {
+        return owner;
+    }
+
+    public void setOwner(short owner) {
+        this.owner = owner;
     }
 
     public int getAttributes() {
@@ -95,25 +124,44 @@ public class FileChunk extends Chunk {
     }
 
     public void setData(byte[] data) {
-        this.data = data;
+        try {
+            if(tmpFile.exists())
+                tmpFile.delete();
+            FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+            fileOutputStream.write(data);
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public byte[] getData() {
-        return data;
+        byte[] tmpData = new byte[0];
+        try {
+            FileInputStream fileInputStream = new FileInputStream(tmpFile);
+            tmpData = new byte[fileInputStream.available()];
+            fileInputStream.read(tmpData, 0, fileInputStream.available());
+            fileInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            return tmpData;
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("[" + id + " FileChunk]: ");
-        str.append(name + " | " + date + " " + time + " | [");
-        if ((attributes & ATTR_ARCHIVE) == ATTR_ARCHIVE)
+        str.append(name + " | " + date + " " + time + " | ");
+        str.append(group + ":" + owner + " | [");
+        if ((attributes & ATTR_VFAT_ARCHIVE) == ATTR_VFAT_ARCHIVE)
             str.append("A");
-        if ((attributes & ATTR_READ_ONLY) == ATTR_READ_ONLY)
+        if ((attributes & ATTR_VFAT_READONLY) == ATTR_VFAT_READONLY)
             str.append("R");
-        if ((attributes & ATTR_SYSTEM) == ATTR_SYSTEM)
+        if ((attributes & ATTR_VFAT_SYSTEM) == ATTR_VFAT_SYSTEM)
             str.append("S");
-        if ((attributes & ATTR_HIDDEN) == ATTR_HIDDEN)
+        if ((attributes & ATTR_VFAT_HIDDEN) == ATTR_VFAT_HIDDEN)
             str.append("H");
         str.append("] | ");
         if (compressionType == COMPRESSION_RAW)
@@ -126,8 +174,13 @@ public class FileChunk extends Chunk {
 
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
+        if(tmpFile.exists())
+            tmpFile.delete();
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+
         reader.skipBytes(16);
-        reader.skipBytes(4);
+        group = Short.reverseBytes(reader.readShort());
+        owner = Short.reverseBytes(reader.readShort());
         attributes = Short.reverseBytes(reader.readShort());
         order = Short.reverseBytes(reader.readShort());
         int dataSize = Integer.reverseBytes(reader.readInt());
@@ -136,12 +189,12 @@ public class FileChunk extends Chunk {
         date = readString(reader);
         time = readString(reader);
 
-        data = new byte[dataSize];
-
         if (compressionType == COMPRESSION_RAW) {
-            reader.read(data, 0, dataSize);
+            byte[] tmpData = new byte[dataSize];
+            reader.read(tmpData, 0, dataSize);
+            fileOutputStream.write(tmpData);
         } else if (compressionType == COMPRESSION_ZLIB) {
-            int index = 0;
+            Inflater inflater = new Inflater();
             while (true) {
                 int blockType = Integer.reverseBytes(reader.readInt());
                 if (blockType != 0x00000100)
@@ -150,54 +203,69 @@ public class FileChunk extends Chunk {
                 int uncompressedBlockSize = reader.readInt();
                 byte[] compressed = new byte[compressedBlockSize];
                 reader.read(compressed, 0, compressedBlockSize);
-
                 try {
-                    Inflater inflater = new Inflater();
+                    inflater.reset();
                     inflater.setInput(compressed);
                     byte[] uncompressed = new byte[uncompressedBlockSize];
                     inflater.inflate(uncompressed);
-                    System.arraycopy(uncompressed, 0, data, index, uncompressedBlockSize);
+                    fileOutputStream.write(uncompressed);
                 } catch (DataFormatException e) {
                     e.printStackTrace();
                 }
 
-                index += uncompressedBlockSize;
                 int rem = compressedBlockSize % 4;
                 if (rem != 0)
                     reader.skipBytes(4 - rem);
             }
         }
+
+        fileOutputStream.close();
     }
 
     @Override
     public void save(RandomAccessFile writer) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(tmpFile);
+
         byte[] hash = new byte[16];
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
-            md5.update(data);
+            byte[] tmpData = new byte[0x100000];
+            while (fileInputStream.available() > 0) {
+                int bytes = fileInputStream.read(tmpData, 0, 0x100000);
+                md5.update(tmpData, 0, bytes);
+            }
             hash = md5.digest();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } finally {
+            fileInputStream.close();
+            fileInputStream = new FileInputStream(tmpFile);
         }
+
         writer.writeInt(Integer.reverseBytes(id));
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
         writer.write(hash);
-        writer.write(new byte[4]);
+        writer.writeShort(Short.reverseBytes(group));
+        writer.writeShort(Short.reverseBytes(owner));
         writer.writeShort(Short.reverseBytes(attributes));
         writer.writeShort(Short.reverseBytes(order));
-        writer.writeInt(Integer.reverseBytes(data.length));
+        writer.writeInt(Integer.reverseBytes(fileInputStream.available()));
         writer.writeByte(compressionType);
         writeString(writer, name);
         writeString(writer, date);
         writeString(writer, time);
 
         if (compressionType == COMPRESSION_RAW) {
-            writer.write(data);
+            byte[] tmpData = new byte[0x100000];
+            while (fileInputStream.available() > 0) {
+                int bytes = fileInputStream.read(tmpData, 0, 0x100000);
+                writer.write(tmpData, 0, bytes);
+            }
         } else if (compressionType == COMPRESSION_ZLIB) {
-            int index = 0;
-            int remain = data.length;
-            if (data.length > 0) {
+            Deflater deflater = new Deflater();
+            int remain = fileInputStream.available();
+            if (fileInputStream.available() > 0) {
                 do {
                     int blockSize;
                     if (remain > 0x00100000) {
@@ -205,9 +273,11 @@ public class FileChunk extends Chunk {
                     } else {
                         blockSize = remain;
                     }
+                    byte tmpData[] = new byte[blockSize];
+                    fileInputStream.read(tmpData, 0, blockSize);
                     byte compressed[] = new byte[0x00100000];
-                    Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, false);
-                    deflater.setInput(data, index, blockSize);
+                    deflater.reset();
+                    deflater.setInput(tmpData, 0, blockSize);
                     deflater.finish();
                     int compressedBlockSize = deflater.deflate(compressed);
                     deflater.end();
@@ -220,9 +290,8 @@ public class FileChunk extends Chunk {
                     if (rem != 0)
                         writer.write(new byte[4 - rem]);
 
-                    index += 0x00100000;
                     remain -= 0x00100000;
-                } while (index < data.length);
+                } while (fileInputStream.available() > 0);
             }
             writer.writeInt(Integer.reverseBytes(0x00000101));
             writer.writeInt(Integer.reverseBytes(0x00000000));
@@ -238,9 +307,7 @@ public class FileChunk extends Chunk {
         String tmpName = name.charAt(0) == '/' ? name.substring(1) : name;
         Path tmpPath = Paths.get(path, tmpName);
         tmpPath.getParent().toFile().mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(tmpPath.toFile());
-        fileOutputStream.write(data);
-        fileOutputStream.close();
+        Files.copy(tmpFile.toPath(), tmpPath, REPLACE_EXISTING);
     }
 
 }

@@ -1,6 +1,9 @@
 import com.polprzewodnikowy.korgpkg.*;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -17,13 +20,22 @@ public class Main {
                 path = args[1];
             PackageReader packageReader = new PackageReader(args[0]);
             List<Chunk> chunks = packageReader.load();
+            new File(path).mkdirs();
+            try {
+                FileWriter fileWriter = new FileWriter(Paths.get(path, "log.txt").toFile());
+                fileWriter.write(packageReader.getLog());
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            PackageWriter packageWriter = new PackageWriter(args[0] + ".test.pkg");
+//            packageWriter.save(chunks);
             for (Chunk chunk : chunks) {
                 try {
                     chunk.export(path);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println(chunk);
             }
         } else {
             System.out.println("\r\nUsage:\r\n\tKorgPackage package [export dir]");

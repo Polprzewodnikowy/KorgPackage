@@ -10,20 +10,42 @@ import java.nio.file.Paths;
  */
 public class DirectoryChunk extends Chunk {
 
-    public final static int ATTR_ARCHIVE = 0x1000;
-    public final static int ATTR_READ_ONLY = 0x2000;
-    public final static int ATTR_SYSTEM = 0x4000;
-    public final static int ATTR_HIDDEN = 0x8000;
+    public final static int ATTR_VFAT_ARCHIVE = 0x1000;
+    public final static int ATTR_VFAT_READONLY = 0x2000;
+    public final static int ATTR_VFAT_SYSTEM = 0x4000;
+    public final static int ATTR_VFAT_HIDDEN = 0x8000;
 
+    public final static int ATTR_EXT3_DONT_CHANGE = 0xFFFF;
+
+    short group;
+    short owner;
     short attributes;
     short order;
     String name;
 
     public DirectoryChunk() {
         id = DIRECTORY;
-        attributes = ATTR_ARCHIVE | ATTR_READ_ONLY | ATTR_SYSTEM;
+        group = 0;
+        owner = 0;
+        attributes = ATTR_VFAT_ARCHIVE | ATTR_VFAT_READONLY | ATTR_VFAT_SYSTEM;
         order = -1;
         name = "";
+    }
+
+    public short getGroup() {
+        return group;
+    }
+
+    public void setGroup(short group) {
+        this.group = group;
+    }
+
+    public short getOwner() {
+        return owner;
+    }
+
+    public void setOwner(short owner) {
+        this.owner = owner;
     }
 
     public int getAttributes() {
@@ -54,14 +76,15 @@ public class DirectoryChunk extends Chunk {
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("[" + id + " DirectoryChunk]: ");
-        str.append(name + " | [");
-        if ((attributes & ATTR_ARCHIVE) == ATTR_ARCHIVE)
+        str.append(name + " | ");
+        str.append(group + ":" + owner + " | [");
+        if ((attributes & ATTR_VFAT_ARCHIVE) == ATTR_VFAT_ARCHIVE)
             str.append("A");
-        if ((attributes & ATTR_READ_ONLY) == ATTR_READ_ONLY)
+        if ((attributes & ATTR_VFAT_READONLY) == ATTR_VFAT_READONLY)
             str.append("R");
-        if ((attributes & ATTR_SYSTEM) == ATTR_SYSTEM)
+        if ((attributes & ATTR_VFAT_SYSTEM) == ATTR_VFAT_SYSTEM)
             str.append("S");
-        if ((attributes & ATTR_HIDDEN) == ATTR_HIDDEN)
+        if ((attributes & ATTR_VFAT_HIDDEN) == ATTR_VFAT_HIDDEN)
             str.append("H");
         str.append("] | " + order);
         return str.toString();
@@ -69,7 +92,8 @@ public class DirectoryChunk extends Chunk {
 
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
-        reader.skipBytes(4);
+        group = Short.reverseBytes(reader.readShort());
+        owner = Short.reverseBytes(reader.readShort());
         attributes = Short.reverseBytes(reader.readShort());
         order = Short.reverseBytes(reader.readShort());
         name = readString(reader);
@@ -80,7 +104,8 @@ public class DirectoryChunk extends Chunk {
         writer.writeInt(Integer.reverseBytes(id));
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
-        writer.write(new byte[4]);
+        writer.writeShort(Short.reverseBytes(group));
+        writer.writeShort(Short.reverseBytes(owner));
         writer.writeShort(Short.reverseBytes(attributes));
         writer.writeShort(Short.reverseBytes(order));
         writeString(writer, name);

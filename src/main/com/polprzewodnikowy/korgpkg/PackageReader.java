@@ -1,5 +1,6 @@
 package com.polprzewodnikowy.korgpkg;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -15,6 +16,7 @@ import java.util.List;
 public class PackageReader {
 
     File file;
+    StringBuilder log;
 
     public PackageReader(String path) {
         file = new File(path);
@@ -22,16 +24,26 @@ public class PackageReader {
 
     public PackageReader(File file) {
         this.file = file;
+        log = new StringBuilder();
+    }
+
+    public String getLog() {
+        return log.toString();
     }
 
     public List<Chunk> load() {
         List<Chunk> chunks = new ArrayList<>();
         RandomAccessFile reader = null;
+        log = new StringBuilder();
+
+        System.out.println("Calculating hash...");
+        log.append("Calculating hash...\r\n");
 
         try {
             reader = new RandomAccessFile(file, "r");
-            byte[] hash = new byte[16];
-            reader.read(hash, 0, 16);
+            byte[] calcHash = new byte[16];
+            byte[] pkgHash = new byte[16];
+            reader.read(pkgHash, 0, 16);
             try {
                 MessageDigest md5 = MessageDigest.getInstance("MD5");
                 byte[] tmp = new byte[0xFFFFFF];
@@ -39,13 +51,19 @@ public class PackageReader {
                     int bytes = reader.read(tmp);
                     md5.update(tmp, 0, bytes);
                 }
-                if (!Arrays.equals(hash, md5.digest())) {
-                    System.out.println("Invalid hash");
+                calcHash = md5.digest();
+                if (!Arrays.equals(pkgHash, calcHash)) {
+                    System.out.println("Invalid hash! Package may be corrupted.");
+                    log.append("Invalid hash! Package may be corrupted.\r\n");
                 }
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
 
+            System.out.println("Expected hash:   0x" + DatatypeConverter.printHexBinary(pkgHash));
+            System.out.println("Calculated hash: 0x" + DatatypeConverter.printHexBinary(calcHash));
+            log.append("Expected hash:   0x" + DatatypeConverter.printHexBinary(pkgHash) + "\r\n");
+            log.append("Calculated hash: 0x" + DatatypeConverter.printHexBinary(calcHash) + "\r\n");
             reader.seek(16);
 
             while (reader.getFilePointer() < reader.length()) {
@@ -59,43 +77,19 @@ public class PackageReader {
                         chunks.add(new HeaderChunk());
                         break;
                     case Chunk.UPDATE_KERNEL:
-                        chunks.add(new KernelChunk(Chunk.UPDATE_KERNEL));
-                        break;
                     case Chunk.UPDATE_RAMDISK:
-                        chunks.add(new RamdiskChunk(Chunk.UPDATE_RAMDISK));
-                        break;
                     case Chunk.UPDATE_INSTALLER_APP:
-                        chunks.add(new AppChunk(Chunk.UPDATE_INSTALLER_APP));
-                        break;
                     case Chunk.UPDATE_INSTALLER_APP_CONFIG:
-                        chunks.add(new AppConfigChunk(Chunk.UPDATE_INSTALLER_APP_CONFIG));
-                        break;
                     case Chunk.SERVICE_KERNEL:
-                        chunks.add(new KernelChunk(Chunk.SERVICE_KERNEL));
-                        break;
                     case Chunk.SERVICE_RAMDISK:
-                        chunks.add(new RamdiskChunk(Chunk.SERVICE_RAMDISK));
-                        break;
                     case Chunk.SERVICE_APP:
-                        chunks.add(new AppChunk(Chunk.SERVICE_APP));
-                        break;
                     case Chunk.SERVICE_APP_CONFIG:
-                        chunks.add(new AppConfigChunk(Chunk.SERVICE_APP_CONFIG));
-                        break;
                     case Chunk.UPDATE_LAUNCHER_APP:
-                        chunks.add(new AppChunk(Chunk.UPDATE_LAUNCHER_APP));
-                        break;
                     case Chunk.UPDATE_LAUNCHER_APP_CONFIG:
-                        chunks.add(new AppConfigChunk(Chunk.UPDATE_LAUNCHER_APP_CONFIG));
-                        break;
                     case Chunk.MLO:
-                        chunks.add(new MLOChunk());
-                        break;
                     case Chunk.UBOOT:
-                        chunks.add(new UBootChunk());
-                        break;
                     case Chunk.USER_KERNEL:
-                        chunks.add(new KernelChunk(Chunk.USER_KERNEL));
+                        chunks.add(new DataChunk(id));
                         break;
                     case Chunk.INSTALLER_SCRIPT:
                         chunks.add(new InstallerScriptChunk());
@@ -114,11 +108,20 @@ public class PackageReader {
                         break;
                     default:
                         valid = false;
+                        System.out.print("[" + id + "UnknownChunk]: found at 0x" + Long.toHexString(pos - 8));
+                        System.out.println(" size 0x" + Integer.toHexString(size));
+                        log.append("[" + id + " UnknownChunk]: found at 0x");
+                        log.append(Long.toHexString(pos - 8));
+                        log.append(" size 0x");
+                        log.append(Integer.toHexString(size));
+                        log.append("\r\n");
                 }
 
                 if (valid) {
                     Chunk lastChunk = chunks.get(chunks.size() - 1);
                     lastChunk.load(reader, size);
+                    System.out.println("Processed: " + lastChunk);
+                    log.append(lastChunk + "\r\n");
                 }
 
                 long offset = pos + size;
@@ -127,6 +130,8 @@ public class PackageReader {
                     offset += 4 - rem;
                 reader.seek(offset);
             }
+
+            log.append("Done!\r\n");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

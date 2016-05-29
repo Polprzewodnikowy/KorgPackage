@@ -33,7 +33,7 @@ public abstract class Chunk {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("[" + id + " UnknownChunk]: unknown");
+        str.append("[" + id + " GenericChunk]: unknown");
         return str.toString();
     }
 

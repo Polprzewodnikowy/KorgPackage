@@ -10,30 +10,20 @@ import java.security.NoSuchAlgorithmException;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
- * Created by korgeaux on 18.05.2016.
+ * Created by korgeaux on 29.05.2016.
  */
-public class RootFSChunk extends Chunk {
+public class DataChunk extends Chunk {
 
-    String name;
     File tmpFile;
 
-    public RootFSChunk() {
-        id = ROOT_FS;
-        name = "";
+    public DataChunk(int id) {
+        this.id = id;
         try {
-            tmpFile = Files.createTempFile("", ".RootFSChunk").toFile();
+            tmpFile = Files.createTempFile("", ".DataChunk").toFile();
             tmpFile.deleteOnExit();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setData(byte[] data) {
@@ -65,18 +55,16 @@ public class RootFSChunk extends Chunk {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("[" + id + " RootFSChunk]: ");
-        str.append(name);
+        str.append("[" + id + " DataChunk]: ");
+        str.append(getPrefix() + "/");
+        str.append(getName());
         return str.toString();
     }
 
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
-        reader.skipBytes(4);
-        reader.skipBytes(2);
-        name = readString(reader);
-        int dataSize = size - 16 - 4 - 2 - name.length() - 1;
+        int dataSize = size - 16;
         byte[] tmpData = new byte[dataSize];
         reader.read(tmpData, 0, dataSize);
 
@@ -103,20 +91,75 @@ public class RootFSChunk extends Chunk {
             e.printStackTrace();
         }
         writer.writeInt(Integer.reverseBytes(id));
-        writer.writeInt(Integer.reverseBytes(tmpData.length + 16 + 4 + 2 + name.length() + 1));
+        writer.writeInt(Integer.reverseBytes(tmpData.length + 16));
         writer.write(hash);
-        writer.writeInt(Integer.reverseBytes(tmpData.length & 0xFFFFFF00));
-        writer.writeShort(0x0200);
-        writeString(writer, name);
         writer.write(tmpData);
     }
 
     @Override
     public void export(String path) throws IOException {
-        String tmpName = name.charAt(0) == '/' ? name.substring(1) : name;
-        Path tmpPath = Paths.get(path, tmpName);
+        String prefix = getPrefix();
+        String name = getName();
+        Path tmpPath = Paths.get(path, prefix, name);
         tmpPath.getParent().toFile().mkdirs();
         Files.copy(tmpFile.toPath(), tmpPath, REPLACE_EXISTING);
+    }
+
+    private String getName() {
+        switch (id) {
+            case UPDATE_KERNEL:
+                return "uImage";
+            case UPDATE_RAMDISK:
+                return "ramdisk.gz";
+            case UPDATE_INSTALLER_APP:
+                return "lfo-pkg-install";
+            case UPDATE_INSTALLER_APP_CONFIG:
+                return "lfo-pkg-install.xml";
+            case SERVICE_KERNEL:
+                return "uImage";
+            case SERVICE_RAMDISK:
+                return "ramdisk.gz";
+            case SERVICE_APP:
+                return "lfo-service";
+            case SERVICE_APP_CONFIG:
+                return "lfo-service.xml";
+            case UPDATE_LAUNCHER_APP:
+                return "lfo-pkg-launcher";
+            case UPDATE_LAUNCHER_APP_CONFIG:
+                return "lfo-pkg-launcher.xml";
+            case MLO:
+                return "MLO";
+            case UBOOT:
+                return "u-boot.bin";
+            case USER_KERNEL:
+                return "uImage";
+            default:
+                return "unknown";
+        }
+    }
+
+    private String getPrefix() {
+        switch (id) {
+            case UPDATE_KERNEL:
+            case UPDATE_RAMDISK:
+            case UPDATE_INSTALLER_APP:
+            case UPDATE_INSTALLER_APP_CONFIG:
+                return "update";
+            case SERVICE_KERNEL:
+            case SERVICE_RAMDISK:
+            case SERVICE_APP:
+            case SERVICE_APP_CONFIG:
+            case UPDATE_LAUNCHER_APP:
+            case UPDATE_LAUNCHER_APP_CONFIG:
+                return "service";
+            case MLO:
+            case UBOOT:
+                return "boot";
+            case USER_KERNEL:
+                return "kernel";
+            default:
+                return "";
+        }
     }
 
 }
