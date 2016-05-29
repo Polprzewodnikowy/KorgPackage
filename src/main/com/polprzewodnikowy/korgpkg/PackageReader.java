@@ -17,22 +17,30 @@ public class PackageReader {
 
     File file;
     StringBuilder log;
+    List<Chunk> chunks;
 
     public PackageReader(String path) {
         file = new File(path);
+        log = new StringBuilder();
+        chunks = new ArrayList<>();
     }
 
     public PackageReader(File file) {
         this.file = file;
         log = new StringBuilder();
+        chunks = new ArrayList<>();
     }
 
     public String getLog() {
         return log.toString();
     }
 
+    public List<Chunk> getChunks() {
+        return chunks;
+    }
+
     public List<Chunk> load() {
-        List<Chunk> chunks = new ArrayList<>();
+        chunks = new ArrayList<>();
         RandomAccessFile reader = null;
         log = new StringBuilder();
 
@@ -60,10 +68,11 @@ public class PackageReader {
                 e.printStackTrace();
             }
 
-            System.out.println("Expected hash:   0x" + DatatypeConverter.printHexBinary(pkgHash));
             System.out.println("Calculated hash: 0x" + DatatypeConverter.printHexBinary(calcHash));
-            log.append("Expected hash:   0x" + DatatypeConverter.printHexBinary(pkgHash) + "\r\n");
+            System.out.println("Expected hash:   0x" + DatatypeConverter.printHexBinary(pkgHash));
             log.append("Calculated hash: 0x" + DatatypeConverter.printHexBinary(calcHash) + "\r\n");
+            log.append("Expected hash:   0x" + DatatypeConverter.printHexBinary(pkgHash) + "\r\n");
+
             reader.seek(16);
 
             while (reader.getFilePointer() < reader.length()) {
