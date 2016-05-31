@@ -1,4 +1,4 @@
-package com.polprzewodnikowy.korgpkg;
+package polprzewodnikowy.korgpkg;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -119,13 +119,13 @@ public class FileChunk extends Chunk {
     }
 
     public void setDateTime(Date date) {
-        this.date = String.format("%tm/%<td/%<ty", date);
+        this.date = String.format("%tm/%<td/%<tY", date);
         this.time = String.format("%tH:%<tM", date);
     }
 
     public void setData(byte[] data) {
         try {
-            if(tmpFile.exists())
+            if (tmpFile.exists())
                 tmpFile.delete();
             FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
             fileOutputStream.write(data);
@@ -174,7 +174,7 @@ public class FileChunk extends Chunk {
 
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
-        if(tmpFile.exists())
+        if (tmpFile.exists())
             tmpFile.delete();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
 
@@ -194,7 +194,6 @@ public class FileChunk extends Chunk {
             reader.read(tmpData, 0, dataSize);
             fileOutputStream.write(tmpData);
         } else if (compressionType == COMPRESSION_ZLIB) {
-            Inflater inflater = new Inflater();
             while (true) {
                 int blockType = Integer.reverseBytes(reader.readInt());
                 if (blockType != 0x00000100)
@@ -204,7 +203,7 @@ public class FileChunk extends Chunk {
                 byte[] compressed = new byte[compressedBlockSize];
                 reader.read(compressed, 0, compressedBlockSize);
                 try {
-                    inflater.reset();
+                    Inflater inflater = new Inflater();
                     inflater.setInput(compressed);
                     byte[] uncompressed = new byte[uncompressedBlockSize];
                     inflater.inflate(uncompressed);
@@ -263,9 +262,8 @@ public class FileChunk extends Chunk {
                 writer.write(tmpData, 0, bytes);
             }
         } else if (compressionType == COMPRESSION_ZLIB) {
-            Deflater deflater = new Deflater();
-            int remain = fileInputStream.available();
-            if (fileInputStream.available() > 0) {
+            int remain = (int) tmpFile.length();
+            if (remain > 0) {
                 do {
                     int blockSize;
                     if (remain > 0x00100000) {
@@ -276,11 +274,10 @@ public class FileChunk extends Chunk {
                     byte tmpData[] = new byte[blockSize];
                     fileInputStream.read(tmpData, 0, blockSize);
                     byte compressed[] = new byte[0x00100000];
-                    deflater.reset();
+                    Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
                     deflater.setInput(tmpData, 0, blockSize);
                     deflater.finish();
                     int compressedBlockSize = deflater.deflate(compressed);
-                    deflater.end();
                     writer.writeInt(Integer.reverseBytes(0x00000100));
                     writer.writeInt(Integer.reverseBytes(compressedBlockSize + 4));
                     writer.writeInt(blockSize);
@@ -291,7 +288,7 @@ public class FileChunk extends Chunk {
                         writer.write(new byte[4 - rem]);
 
                     remain -= 0x00100000;
-                } while (fileInputStream.available() > 0);
+                } while (remain > 0);
             }
             writer.writeInt(Integer.reverseBytes(0x00000101));
             writer.writeInt(Integer.reverseBytes(0x00000000));

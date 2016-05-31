@@ -1,4 +1,4 @@
-package com.polprzewodnikowy.korgpkg;
+package polprzewodnikowy.korgpkg;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;

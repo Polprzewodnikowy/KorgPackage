@@ -1,4 +1,4 @@
-package com.polprzewodnikowy.korgpkg;
+package polprzewodnikowy.korgpkg;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -28,7 +28,7 @@ public class DataChunk extends Chunk {
 
     public void setData(byte[] data) {
         try {
-            if(tmpFile.exists())
+            if (tmpFile.exists())
                 tmpFile.delete();
             FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
             fileOutputStream.write(data);
@@ -68,7 +68,7 @@ public class DataChunk extends Chunk {
         byte[] tmpData = new byte[dataSize];
         reader.read(tmpData, 0, dataSize);
 
-        if(tmpFile.exists())
+        if (tmpFile.exists())
             tmpFile.delete();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
         fileOutputStream.write(tmpData);

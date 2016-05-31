@@ -5,7 +5,7 @@ repositories {
 apply plugin: 'java'
 
 dependencies {
-
+    compile 'no.tornado:tornadofx-controls:1.0.4'
 }
 
 sourceSets {
@@ -14,7 +14,13 @@ sourceSets {
 }
 
 jar {
-    manifest.attributes 'Main-Class': 'Main'
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 task run(type: JavaExec, dependsOn: classes) {
@@ -22,12 +28,11 @@ task run(type: JavaExec, dependsOn: classes) {
     description 'Run program.'
     main 'Main'
     classpath sourceSets.main.runtimeClasspath
-    args '../Pa600.pkg'
 }
 
 task runJar(type: Exec, dependsOn: jar) {
     group 'Run'
     description 'Run jar executable.'
     executable 'java'
-    args '-jar', "$jar.archivePath", '../Pa600.pkg'
+    args '-jar', "$jar.archivePath"
 }

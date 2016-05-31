@@ -1,4 +1,4 @@
-package com.polprzewodnikowy.korgpkg;
+package polprzewodnikowy.korgpkg;
 
 import java.io.File;
 import java.io.IOException;

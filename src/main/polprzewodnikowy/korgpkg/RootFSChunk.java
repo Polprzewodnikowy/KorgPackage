@@ -1,4 +1,4 @@
-package com.polprzewodnikowy.korgpkg;
+package polprzewodnikowy.korgpkg;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -10,33 +10,22 @@ import java.security.NoSuchAlgorithmException;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
- * Created by korgeaux on 19.05.2016.
+ * Created by korgeaux on 18.05.2016.
  */
-public class InstallerScriptChunk extends Chunk {
+public class RootFSChunk extends Chunk {
 
+    String name;
     File tmpFile;
 
-    short order;
-    String name;
-
-    public InstallerScriptChunk() {
-        id = INSTALLER_SCRIPT;
-        order = -1;
+    public RootFSChunk() {
+        id = ROOT_FS;
         name = "";
         try {
-            tmpFile = Files.createTempFile("", ".InstallerScriptChunk").toFile();
+            tmpFile = Files.createTempFile("", ".RootFSChunk").toFile();
             tmpFile.deleteOnExit();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public short getOrder() {
-        return order;
-    }
-
-    public void setOrder(short order) {
-        this.order = order;
     }
 
     public String getName() {
@@ -49,7 +38,7 @@ public class InstallerScriptChunk extends Chunk {
 
     public void setData(byte[] data) {
         try {
-            if(tmpFile.exists())
+            if (tmpFile.exists())
                 tmpFile.delete();
             FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
             fileOutputStream.write(data);
@@ -76,21 +65,22 @@ public class InstallerScriptChunk extends Chunk {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("[" + id + " InstallerScriptChunk]: ");
-        str.append(name + " | " + order);
+        str.append("[" + id + " RootFSChunk]: ");
+        str.append(name);
         return str.toString();
     }
 
     @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
-        order = Short.reverseBytes(reader.readShort());
+        reader.skipBytes(4);
+        reader.skipBytes(2);
         name = readString(reader);
-        int dataSize = size - 16 - 2 - name.length() - 1;
+        int dataSize = size - 16 - 4 - 2 - name.length() - 1;
         byte[] tmpData = new byte[dataSize];
         reader.read(tmpData, 0, dataSize);
 
-        if(tmpFile.exists())
+        if (tmpFile.exists())
             tmpFile.delete();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
         fileOutputStream.write(tmpData);
@@ -113,16 +103,18 @@ public class InstallerScriptChunk extends Chunk {
             e.printStackTrace();
         }
         writer.writeInt(Integer.reverseBytes(id));
-        writer.writeInt(Integer.reverseBytes(tmpData.length + 16 + 2 + name.length() + 1));
+        writer.writeInt(Integer.reverseBytes(tmpData.length + 16 + 4 + 2 + name.length() + 1));
         writer.write(hash);
-        writer.writeShort(Short.reverseBytes(order));
+        writer.writeInt(Integer.reverseBytes(tmpData.length & 0xFFFFFF00));
+        writer.writeShort(0x0200);
         writeString(writer, name);
         writer.write(tmpData);
     }
 
     @Override
     public void export(String path) throws IOException {
-        Path tmpPath = Paths.get(path, "update", name);
+        String tmpName = name.charAt(0) == '/' ? name.substring(1) : name;
+        Path tmpPath = Paths.get(path, tmpName);
         tmpPath.getParent().toFile().mkdirs();
         Files.copy(tmpFile.toPath(), tmpPath, REPLACE_EXISTING);
     }
