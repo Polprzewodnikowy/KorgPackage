@@ -2,18 +2,20 @@ package polprzewodnikowy.korgpkgedit;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.PackageReader;
-import polprzewodnikowy.korgpkg.PackageWriter;
+import polprzewodnikowy.korgpkg.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +28,46 @@ import java.util.List;
 public class MainController {
 
     private Stage stage;
+
     public ListView chunksListView;
     public Label statusLabel;
 
+    public MenuItem header;
+    public MenuItem data;
+    public MenuItem installerScript;
+    public MenuItem directory;
+    public MenuItem file;
+    public MenuItem rootFS;
+
+    public void addChunk(ActionEvent e) {
+        Chunk chunk;
+        if(e.getSource().equals(header)) {
+            chunk = new HeaderChunk();
+        } else if (e.getSource().equals(data)) {
+            chunk = new DataChunk(Chunk.UPDATE_KERNEL);
+        } else if (e.getSource().equals(installerScript)) {
+            chunk = new InstallerScriptChunk();
+        } else if (e.getSource().equals(directory)) {
+            chunk = new DirectoryChunk();
+        } else if (e.getSource().equals(file)) {
+            chunk = new FileChunk();
+        } else if (e.getSource().equals(rootFS)) {
+            chunk = new RootFSChunk();
+        } else {
+            return;
+        }
+        Chunk c = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
+        if (c != null) {
+            int index = chunksListView.getSelectionModel().getSelectedIndex();
+            chunksListView.getItems().add(index, chunk);
+        } else {
+            chunksListView.getItems().add(chunk);
+        }
+    }
+
     public void setup(Stage stage) {
         this.stage = stage;
+        chunksListView.setItems(FXCollections.observableList(new ArrayList<Chunk>()));
     }
 
     public void refreshList() {

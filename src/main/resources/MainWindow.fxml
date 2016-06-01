@@ -11,6 +11,8 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.TextField?>
 <BorderPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="polprzewodnikowy.korgpkgedit.MainController">
     <top>
         <MenuBar BorderPane.alignment="TOP_LEFT">
@@ -28,6 +30,17 @@
                         <MenuItem mnemonicParsing="false" onAction="#editChunkAction" text="Edit" />
                         <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export" />
                         <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Add">
+                    <items>
+
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Header" fx:id="header" />
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Data" fx:id="data" />
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Installer script" fx:id="installerScript" />
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Directory" fx:id="directory" />
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="File" fx:id="file" />
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Root FS" fx:id="rootFS" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
