@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import tornadofx.control.DateTimePicker?>
+
+<GridPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="polprzewodnikowy.korgpkgedit.HeaderEditController" vgap="10" hgap="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <Label text="System type 1:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <Label text="System type 2:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <Label text="Build system:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <Label text="Date/Time:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <Label text="Package type 1:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+    <Label text="Package type 2:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+
+    <TextField fx:id="systemType1" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
+    <TextField fx:id="systemType2" GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="400"/>
+    <TextField fx:id="buildSystem" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400"/>
+    <DateTimePicker fx:id="dateTime" GridPane.columnIndex="1" GridPane.rowIndex="3" minWidth="400"/>
+    <TextField fx:id="packageType1" GridPane.columnIndex="1" GridPane.rowIndex="4" minWidth="400"/>
+    <TextField fx:id="packageType2" GridPane.columnIndex="1" GridPane.rowIndex="5" minWidth="400"/>
+
+    <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6" minWidth="400" alignment="BASELINE_RIGHT">
+        <Button text="OK" onAction="#saveChunkAction"/>
+    </HBox>
+</GridPane>

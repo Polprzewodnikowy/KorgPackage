@@ -1,5 +1,6 @@
 package polprzewodnikowy.korgpkgedit;
 
+import polprzewodnikowy.korgpkg.Chunk;
 import polprzewodnikowy.korgpkg.FileChunk;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -20,7 +21,7 @@ import java.util.Date;
 /**
  * Created by korgeaux on 31.05.2016.
  */
-public class FileEditController {
+public class FileEditController implements ChunkEditController {
 
     Stage stage;
     FileChunk fileChunk;
@@ -37,9 +38,9 @@ public class FileEditController {
     public TextField owner;
     public TextField order;
 
-    public void setup(Stage stage, FileChunk fileChunk) {
+    public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
-        this.fileChunk = fileChunk;
+        this.fileChunk = (FileChunk) chunk;
         name.setText(fileChunk.getName());
         date.setDateTimeValue(LocalDateTime.ofInstant(fileChunk.getDateTime().toInstant(), ZoneId.systemDefault()));
         compression.getItems().add("RAW");

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?language javascript?>
+
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -8,38 +11,50 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="polprzewodnikowy.korgpkgedit.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="polprzewodnikowy.korgpkgedit.MainController">
     <top>
         <MenuBar BorderPane.alignment="TOP_LEFT">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#openPkgAction" text="Open"/>
-                        <MenuItem mnemonicParsing="false" onAction="#savePkgAction" text="Save"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" onAction="#closeAppAction" text="Close"/>
+                        <MenuItem mnemonicParsing="false" onAction="#openPkgAction" text="Open" />
+                        <MenuItem mnemonicParsing="false" onAction="#savePkgAction" text="Save" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeAppAction" text="Close" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Edit" onAction="#editChunkAction"/>
-                        <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export"/>
-                        <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove"/>
+                        <MenuItem mnemonicParsing="false" onAction="#editChunkAction" text="Edit" />
+                        <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export" />
+                        <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About"/>
+                        <MenuItem mnemonicParsing="false" onAction="#showAboutAction" text="About" />
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
     </top>
     <center>
-        <ListView fx:id="chunksListView"/>
+        <ListView fx:id="chunksListView">
+            <contextMenu>
+                <ContextMenu>
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#editChunkAction" text="Edit" />
+                        <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export" />
+                        <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove" />
+                    </items>
+                </ContextMenu>
+            </contextMenu>
+        </ListView>
     </center>
     <bottom>
-        <Label fx:id="statusLabel"/>
+        <Label fx:id="statusLabel" />
     </bottom>
+    <fx:script>
+        chunksListView.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+    </fx:script>
 </BorderPane>

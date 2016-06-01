@@ -4,6 +4,9 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by korgeaux on 08.05.2016.
@@ -29,6 +32,70 @@ public class HeaderChunk extends Chunk {
         time = "";
         packageType1 = "";
         packageType2 = "";
+    }
+
+    public void setUnknown(byte[] unknown) {
+        this.unknown = unknown;
+    }
+
+    public byte[] getUnknown() {
+        return unknown;
+    }
+
+    public void setPackageType1(String packageType1) {
+        this.packageType1 = packageType1;
+    }
+
+    public String getPackageType1() {
+        return packageType1;
+    }
+
+    public void setPackageType2(String packageType2) {
+        this.packageType2 = packageType2;
+    }
+
+    public String getPackageType2() {
+        return packageType2;
+    }
+
+    public void setBuildSystem(String buildSystem) {
+        this.buildSystem = buildSystem;
+    }
+
+    public String getBuildSystem() {
+        return buildSystem;
+    }
+
+    public Date getDateTime() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+        Date tmpDate = new Date();
+        try {
+            tmpDate = simpleDateFormat.parse(date + " " + time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tmpDate;
+    }
+
+    public void setDateTime(Date date) {
+        this.date = String.format("%tm/%<td/%<tY", date);
+        this.time = String.format("%tH:%<tM", date);
+    }
+
+    public void setSystemType1(String systemType1) {
+        this.systemType1 = systemType1;
+    }
+
+    public String getSystemType1() {
+        return systemType1;
+    }
+
+    public void setSystemType2(String systemType2) {
+        this.systemType2 = systemType2;
+    }
+
+    public String getSystemType2() {
+        return systemType2;
     }
 
     @Override

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" vgap="5" hgap="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <Label text="KORG pkg editor" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <Label text="created by:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <Label text="polprzewodnikowy" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+</GridPane>

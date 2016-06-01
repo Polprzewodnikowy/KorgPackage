@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="polprzewodnikowy.korgpkgedit.DataEditController" vgap="10" hgap="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+    <ChoiceBox fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
+
+    <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="400" alignment="BASELINE_RIGHT">
+        <Button text="Import data" onAction="#importDataAction"/>
+        <Button text="OK" onAction="#saveChunkAction"/>
+    </HBox>
+</GridPane>

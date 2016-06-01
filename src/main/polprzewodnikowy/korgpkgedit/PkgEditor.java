@@ -21,7 +21,7 @@ public class PkgEditor extends Application {
         Parent root = loader.load();
         MainController controller = loader.getController();
         controller.setup(primaryStage);
-        primaryStage.setScene(new Scene(root, 800, 500));
+        primaryStage.setScene(new Scene(root, 1000, 800));
         primaryStage.setTitle("KORG pkg editor");
         primaryStage.show();
     }

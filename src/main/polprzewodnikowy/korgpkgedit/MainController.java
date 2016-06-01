@@ -1,20 +1,19 @@
 package polprzewodnikowy.korgpkgedit;
 
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.FileChunk;
-import polprzewodnikowy.korgpkg.PackageReader;
-import polprzewodnikowy.korgpkg.PackageWriter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import polprzewodnikowy.korgpkg.Chunk;
+import polprzewodnikowy.korgpkg.PackageReader;
+import polprzewodnikowy.korgpkg.PackageWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,27 +28,6 @@ public class MainController {
     private Stage stage;
     public ListView chunksListView;
     public Label statusLabel;
-
-    @FXML
-    public void initialize() {
-        ContextMenu chunksContextMenu = new ContextMenu();
-        MenuItem menuItem;
-
-        menuItem = new MenuItem("Edit");
-        menuItem.setOnAction((ex) -> editChunkAction());
-        chunksContextMenu.getItems().add(menuItem);
-
-        menuItem = new MenuItem("Export");
-        menuItem.setOnAction((ex) -> exportChunkAction());
-        chunksContextMenu.getItems().add(menuItem);
-
-        menuItem = new MenuItem("Remove");
-        menuItem.setOnAction((ex) -> removeChunkAction());
-        chunksContextMenu.getItems().add(menuItem);
-
-        chunksListView.setContextMenu(chunksContextMenu);
-        chunksListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    }
 
     public void setup(Stage stage) {
         this.stage = stage;
@@ -99,24 +77,49 @@ public class MainController {
     public void editChunkAction() {
         Chunk chunk = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
         if (chunk != null) {
+            String view;
+            switch (chunk.getId()) {
+                case Chunk.HEADER:
+                    view = "HeaderEditWindow.fxml";
+                    break;
+                case Chunk.UPDATE_KERNEL:
+                case Chunk.UPDATE_RAMDISK:
+                case Chunk.UPDATE_INSTALLER_APP:
+                case Chunk.UPDATE_INSTALLER_APP_CONFIG:
+                case Chunk.SERVICE_KERNEL:
+                case Chunk.SERVICE_RAMDISK:
+                case Chunk.SERVICE_APP:
+                case Chunk.SERVICE_APP_CONFIG:
+                case Chunk.UPDATE_LAUNCHER_APP:
+                case Chunk.UPDATE_LAUNCHER_APP_CONFIG:
+                case Chunk.MLO:
+                case Chunk.UBOOT:
+                case Chunk.USER_KERNEL:
+                    view = "DataEditWindow.fxml";
+                    break;
+                case Chunk.INSTALLER_SCRIPT:
+                    view = "InstallerScriptEditWindow.fxml";
+                    break;
+                case Chunk.DIRECTORY:
+                    view = "DirectoryEditWindow.fxml";
+                    break;
+                case Chunk.FILE:
+                    view = "FileEditWindow.fxml";
+                    break;
+                case Chunk.ROOT_FS:
+                    view = "RootFSEditWindow.fxml";
+                    break;
+                default:
+                    return;
+            }
+
             try {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(view));
+                Parent root = loader.load();
+                ChunkEditController controller = loader.getController();
                 Stage editWindow = new Stage();
-                FXMLLoader loader;
-                Parent root;
-                String title;
-                switch (chunk.getId()) {
-                    case Chunk.FILE:
-                        loader = new FXMLLoader(getClass().getClassLoader().getResource("FileEditWindow.fxml"));
-                        root = loader.load();
-                        FileEditController controller = loader.getController();
-                        controller.setup(editWindow, (FileChunk) chunk);
-                        title = "File edit";
-                        break;
-                    default:
-                        return;
-                }
-                editWindow.setScene(new Scene(root, 510, 250));
-                editWindow.setTitle(title);
+                controller.setup(editWindow, chunk);
+                editWindow.setScene(new Scene(root));
                 editWindow.setResizable(false);
                 editWindow.initModality(Modality.APPLICATION_MODAL);
                 editWindow.showAndWait();
@@ -152,6 +155,20 @@ public class MainController {
         Chunk chunk = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
         if (chunk != null) {
             chunksListView.getItems().removeAll(chunksListView.getSelectionModel().getSelectedItems());
+        }
+    }
+
+    public void showAboutAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("AboutWindow.fxml"));
+            Parent root = loader.load();
+            Stage editWindow = new Stage();
+            editWindow.setScene(new Scene(root));
+            editWindow.setResizable(false);
+            editWindow.initModality(Modality.APPLICATION_MODAL);
+            editWindow.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
