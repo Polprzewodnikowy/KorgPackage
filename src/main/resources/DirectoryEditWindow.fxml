@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <GridPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="polprzewodnikowy.korgpkgedit.DirectoryEditController" vgap="10" hgap="10">
+          fx:controller="korgpkgedit.DirectoryEditController" vgap="10" hgap="10">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>

@@ -1,10 +1,10 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.RootFSChunk;
+import korgpkg.Chunk;
+import korgpkg.RootFSChunk;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,15 +15,16 @@ import java.io.IOException;
  */
 public class RootFSEditController implements ChunkEditController {
 
-    Stage stage;
-    RootFSChunk rootFSChunk;
-    byte[] tmpData;
+    private Stage stage;
+    private RootFSChunk rootFSChunk;
+    private byte[] data;
 
     public TextField name;
 
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.rootFSChunk = (RootFSChunk) chunk;
+        stage.setTitle(rootFSChunk.toString());
         name.setText(rootFSChunk.getName());
     }
 
@@ -37,21 +38,19 @@ public class RootFSEditController implements ChunkEditController {
         if (file != null) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
-                tmpData = new byte[(int) file.length()];
-                fileInputStream.read(tmpData, 0, (int) file.length());
+                data = new byte[(int) file.length()];
+                fileInputStream.read(data, 0, (int) file.length());
                 fileInputStream.close();
-
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
     }
 
     public void saveChunkAction() {
         rootFSChunk.setName(name.getText());
-        if (tmpData != null) {
-            rootFSChunk.setData(tmpData);
-        }
+        if (data != null)
+            rootFSChunk.setData(data);
         stage.close();
     }
 

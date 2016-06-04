@@ -3,10 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.collections.*?>
 <?import tornadofx.control.DateTimePicker?>
 
+<?import java.lang.String?>
 <GridPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="polprzewodnikowy.korgpkgedit.FileEditController" vgap="10" hgap="10">
+          fx:controller="korgpkgedit.FileEditController" vgap="10" hgap="10">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
@@ -19,7 +21,14 @@
 
     <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
     <DateTimePicker fx:id="date" GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="400"/>
-    <ChoiceBox fx:id="compression" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400"/>
+    <ChoiceBox fx:id="compression" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="RAW" />
+                <String fx:value="zlib" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
     <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3" minWidth="400">
         <CheckBox fx:id="attrA" text="A"/>
         <CheckBox fx:id="attrR" text="R"/>

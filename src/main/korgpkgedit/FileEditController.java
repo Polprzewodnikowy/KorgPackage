@@ -1,7 +1,7 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.FileChunk;
+import korgpkg.Chunk;
+import korgpkg.FileChunk;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
@@ -23,9 +23,9 @@ import java.util.Date;
  */
 public class FileEditController implements ChunkEditController {
 
-    Stage stage;
-    FileChunk fileChunk;
-    byte[] tmpData;
+    private Stage stage;
+    private FileChunk fileChunk;
+    private byte[] data;
 
     public TextField name;
     public DateTimePicker date;
@@ -41,10 +41,9 @@ public class FileEditController implements ChunkEditController {
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.fileChunk = (FileChunk) chunk;
+        stage.setTitle(fileChunk.toString());
         name.setText(fileChunk.getName());
         date.setDateTimeValue(LocalDateTime.ofInstant(fileChunk.getDateTime().toInstant(), ZoneId.systemDefault()));
-        compression.getItems().add("RAW");
-        compression.getItems().add("Zlib");
         compression.getSelectionModel().select(fileChunk.getCompressionType());
         int attr = fileChunk.getAttributes();
         if ((attr & FileChunk.ATTR_VFAT_ARCHIVE) != 0)
@@ -55,9 +54,6 @@ public class FileEditController implements ChunkEditController {
             attrH.setSelected(true);
         if ((attr & FileChunk.ATTR_VFAT_SYSTEM) != 0)
             attrS.setSelected(true);
-        group.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-        owner.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-        order.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
         group.setText(Integer.toString(fileChunk.getGroup()));
         owner.setText(Integer.toString(fileChunk.getOwner()));
         order.setText(Integer.toString(fileChunk.getOrder()));
@@ -73,12 +69,11 @@ public class FileEditController implements ChunkEditController {
         if (file != null) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
-                tmpData = new byte[(int) file.length()];
-                fileInputStream.read(tmpData, 0, (int) file.length());
+                data = new byte[(int) file.length()];
+                fileInputStream.read(data, 0, (int) file.length());
                 fileInputStream.close();
-
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -100,9 +95,8 @@ public class FileEditController implements ChunkEditController {
         fileChunk.setGroup(Short.parseShort(group.getText()));
         fileChunk.setOwner(Short.parseShort(owner.getText()));
         fileChunk.setOrder(Short.parseShort(order.getText()));
-        if (tmpData != null) {
-            fileChunk.setData(tmpData);
-        }
+        if (data != null)
+            fileChunk.setData(data);
         stage.close();
     }
 

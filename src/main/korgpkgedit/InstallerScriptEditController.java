@@ -1,12 +1,12 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.InstallerScriptChunk;
+import korgpkg.Chunk;
+import korgpkg.InstallerScriptChunk;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,9 +17,9 @@ import java.io.IOException;
  */
 public class InstallerScriptEditController implements ChunkEditController {
 
-    Stage stage;
-    InstallerScriptChunk installerScriptChunk;
-    byte[] tmpData;
+    private Stage stage;
+    private InstallerScriptChunk installerScriptChunk;
+    byte[] data;
 
     public TextField name;
     public TextField order;
@@ -27,6 +27,7 @@ public class InstallerScriptEditController implements ChunkEditController {
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.installerScriptChunk = (InstallerScriptChunk) chunk;
+        stage.setTitle(installerScriptChunk.toString());
         name.setText(installerScriptChunk.getName());
         order.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
         order.setText(Integer.toString(installerScriptChunk.getOrder()));
@@ -42,12 +43,11 @@ public class InstallerScriptEditController implements ChunkEditController {
         if (file != null) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
-                tmpData = new byte[(int) file.length()];
-                fileInputStream.read(tmpData, 0, (int) file.length());
+                data = new byte[(int) file.length()];
+                fileInputStream.read(data, 0, (int) file.length());
                 fileInputStream.close();
-
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -55,9 +55,8 @@ public class InstallerScriptEditController implements ChunkEditController {
     public void saveChunkAction() {
         installerScriptChunk.setName(name.getText());
         installerScriptChunk.setOrder(Short.parseShort(order.getText()));
-        if (tmpData != null) {
-            installerScriptChunk.setData(tmpData);
-        }
+        if (data != null)
+            installerScriptChunk.setData(data);
         stage.close();
     }
 

@@ -1,4 +1,4 @@
-package polprzewodnikowy.korgpkg;
+package korgpkg;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -13,14 +13,14 @@ import java.util.Date;
  */
 public class HeaderChunk extends Chunk {
 
-    byte[] unknown;
-    String systemType1;
-    String systemType2;
-    String buildSystem;
-    String date;
-    String time;
-    String packageType1;
-    String packageType2;
+    private byte[] unknown;
+    private String systemType1;
+    private String systemType2;
+    private String buildSystem;
+    private String date;
+    private String time;
+    private String packageType1;
+    private String packageType2;
 
     public HeaderChunk() {
         id = HEADER;
@@ -72,7 +72,7 @@ public class HeaderChunk extends Chunk {
         try {
             tmpDate = simpleDateFormat.parse(date + " " + time);
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         return tmpDate;
     }
@@ -100,13 +100,9 @@ public class HeaderChunk extends Chunk {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append("[" + id + " HeaderChunk]: ");
-        str.append(systemType1 + " " + date + " " + time);
-        return str.toString();
+        return "Header: " + systemType1 + " " + date + " " + time;
     }
 
-    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         unknown = new byte[12];
         reader.read(unknown, 0, 12);
@@ -119,7 +115,6 @@ public class HeaderChunk extends Chunk {
         packageType2 = readString(reader);
     }
 
-    @Override
     public void save(RandomAccessFile writer) throws IOException {
         writer.writeInt(Integer.reverseBytes(id));
         long offset = writer.getFilePointer();
@@ -137,7 +132,6 @@ public class HeaderChunk extends Chunk {
         writer.writeInt(Integer.reverseBytes(size));
     }
 
-    @Override
     public void export(String path) throws IOException {
         Path tmpPath = Paths.get(path, "Header.txt");
         tmpPath.getParent().toFile().mkdirs();

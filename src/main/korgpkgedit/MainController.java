@@ -1,11 +1,9 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -15,7 +13,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import polprzewodnikowy.korgpkg.*;
+import korgpkg.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +39,7 @@ public class MainController {
 
     public void addChunk(ActionEvent e) {
         Chunk chunk;
-        if(e.getSource().equals(header)) {
+        if (e.getSource().equals(header)) {
             chunk = new HeaderChunk();
         } else if (e.getSource().equals(data)) {
             chunk = new DataChunk(Chunk.UPDATE_KERNEL);
@@ -162,7 +160,7 @@ public class MainController {
                 editWindow.showAndWait();
                 refreshList();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -182,7 +180,7 @@ public class MainController {
                         c.export(dir.getPath());
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.err.println(e.getMessage());
                 }
             }
         }
@@ -205,7 +203,7 @@ public class MainController {
             editWindow.initModality(Modality.APPLICATION_MODAL);
             editWindow.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 

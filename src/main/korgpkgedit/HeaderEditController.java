@@ -1,11 +1,12 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.HeaderChunk;
+import korgpkg.Chunk;
+import korgpkg.HeaderChunk;
 import tornadofx.control.DateTimePicker;
 
+import javax.xml.bind.DatatypeConverter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -15,9 +16,10 @@ import java.util.Date;
  */
 public class HeaderEditController implements ChunkEditController {
 
-    Stage stage;
-    HeaderChunk headerChunk;
+    private Stage stage;
+    private HeaderChunk headerChunk;
 
+    public TextField unknown;
     public TextField systemType1;
     public TextField systemType2;
     public TextField buildSystem;
@@ -28,6 +30,8 @@ public class HeaderEditController implements ChunkEditController {
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.headerChunk = (HeaderChunk) chunk;
+        stage.setTitle(headerChunk.toString());
+        unknown.setText(DatatypeConverter.printHexBinary(headerChunk.getUnknown()));
         systemType1.setText(headerChunk.getSystemType1());
         systemType2.setText(headerChunk.getSystemType2());
         buildSystem.setText(headerChunk.getBuildSystem());

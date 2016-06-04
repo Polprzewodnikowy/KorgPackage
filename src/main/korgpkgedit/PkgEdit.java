@@ -1,4 +1,4 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -9,9 +9,9 @@ import javafx.stage.Stage;
 /**
  * Created by korgeaux on 31.05.2016.
  */
-public class PkgEditor extends Application {
+public class PkgEdit extends Application {
 
-    public void run(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 
@@ -21,8 +21,8 @@ public class PkgEditor extends Application {
         Parent root = loader.load();
         MainController controller = loader.getController();
         controller.setup(primaryStage);
-        primaryStage.setScene(new Scene(root, 1000, 800));
-        primaryStage.setTitle("KORG pkg editor");
+        primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.setTitle("KORG pkg edit");
         primaryStage.show();
     }
 

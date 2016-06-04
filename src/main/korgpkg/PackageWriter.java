@@ -1,4 +1,4 @@
-package polprzewodnikowy.korgpkg;
+package korgpkg;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class PackageWriter {
 
-    File file;
+    private File file;
 
     public PackageWriter(String path) {
         file = new File(path);
@@ -61,19 +61,19 @@ public class PackageWriter {
                 }
                 hash = md5.digest();
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
 
             writer.seek(0);
             writer.write(hash);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         } finally {
             try {
                 if (writer != null)
                     writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
     }

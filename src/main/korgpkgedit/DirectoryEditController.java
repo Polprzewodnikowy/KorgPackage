@@ -1,21 +1,21 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
-import polprzewodnikowy.korgpkg.Chunk;
-import polprzewodnikowy.korgpkg.DirectoryChunk;
-import polprzewodnikowy.korgpkg.FileChunk;
+import korgpkg.Chunk;
+import korgpkg.DirectoryChunk;
+import korgpkg.FileChunk;
 
 /**
  * Created by korgeaux on 31.05.2016.
  */
 public class DirectoryEditController implements ChunkEditController {
 
-    Stage stage;
-    DirectoryChunk directoryChunk;
+    private Stage stage;
+    private DirectoryChunk directoryChunk;
 
     public TextField name;
     public CheckBox attrA;
@@ -29,6 +29,7 @@ public class DirectoryEditController implements ChunkEditController {
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.directoryChunk = (DirectoryChunk) chunk;
+        stage.setTitle(directoryChunk.toString());
         name.setText(directoryChunk.getName());
         int attr = directoryChunk.getAttributes();
         if ((attr & FileChunk.ATTR_VFAT_ARCHIVE) != 0)
@@ -39,9 +40,6 @@ public class DirectoryEditController implements ChunkEditController {
             attrH.setSelected(true);
         if ((attr & FileChunk.ATTR_VFAT_SYSTEM) != 0)
             attrS.setSelected(true);
-        group.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-        owner.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-        order.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
         group.setText(Integer.toString(directoryChunk.getGroup()));
         owner.setText(Integer.toString(directoryChunk.getOwner()));
         order.setText(Integer.toString(directoryChunk.getOrder()));

@@ -11,9 +11,7 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.TextField?>
-<BorderPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="polprzewodnikowy.korgpkgedit.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="korgpkgedit.MainController">
     <top>
         <MenuBar BorderPane.alignment="TOP_LEFT">
             <menus>

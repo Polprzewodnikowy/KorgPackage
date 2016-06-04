@@ -1,4 +1,4 @@
-package polprzewodnikowy.korgpkg;
+package korgpkg;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class PackageReader {
 
-    File file;
-    StringBuilder log;
-    List<Chunk> chunks;
+    private File file;
+    private StringBuilder log;
+    private List<Chunk> chunks;
 
     public PackageReader(String path) {
         file = new File(path);
@@ -43,7 +43,8 @@ public class PackageReader {
         chunks = new ArrayList<>();
         RandomAccessFile reader = null;
         log = new StringBuilder();
-
+        System.out.println("Processing pkg: " + file.getName());
+        log.append("Processing pkg: " + file.getName() + "\r\n");
         System.out.println("Calculating hash...");
         log.append("Calculating hash...\r\n");
 
@@ -65,7 +66,7 @@ public class PackageReader {
                     log.append("Invalid hash! Package may be corrupted.\r\n");
                 }
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
 
             System.out.println("Calculated hash: 0x" + DatatypeConverter.printHexBinary(calcHash));
@@ -117,19 +118,16 @@ public class PackageReader {
                         break;
                     default:
                         valid = false;
-                        System.out.print("[" + id + "UnknownChunk]: found at 0x" + Long.toHexString(pos - 8));
+                        System.out.print("[" + id + "Unknown]: found at 0x" + Long.toHexString(pos - 8));
                         System.out.println(" size 0x" + Integer.toHexString(size));
-                        log.append("[" + id + " UnknownChunk]: found at 0x");
-                        log.append(Long.toHexString(pos - 8));
-                        log.append(" size 0x");
-                        log.append(Integer.toHexString(size));
-                        log.append("\r\n");
+                        log.append("[" + id + " Unknown]: found at 0x" + Long.toHexString(pos - 8));
+                        log.append(" size 0x" + Integer.toHexString(size) + "\r\n");
                 }
 
                 if (valid) {
                     Chunk lastChunk = chunks.get(chunks.size() - 1);
                     lastChunk.load(reader, size);
-                    System.out.println("Processed: " + lastChunk);
+                    System.out.println(lastChunk);
                     log.append(lastChunk + "\r\n");
                 }
 
@@ -140,16 +138,17 @@ public class PackageReader {
                 reader.seek(offset);
             }
 
-            log.append("Done!\r\n");
+            log.append("Done! Processed " + chunks.size() + " chunks\r\n");
+            System.out.println("Done! Processed " + chunks.size() + " chunks");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         } finally {
             try {
                 if (reader != null) {
                     reader.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
 

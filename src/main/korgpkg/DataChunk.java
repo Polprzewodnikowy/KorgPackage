@@ -1,4 +1,4 @@
-package polprzewodnikowy.korgpkg;
+package korgpkg;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -14,39 +14,32 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  */
 public class DataChunk extends Chunk {
 
-    File tmpFile;
+    private File file;
 
     public DataChunk(int id) {
         this.id = id;
         try {
-            tmpFile = Files.createTempFile("", ".DataChunk").toFile();
-            tmpFile.deleteOnExit();
+            file = Files.createTempFile("", ".DataChunk").toFile();
+            file.deleteOnExit();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
     public void setData(byte[] data) {
         try {
-            if (tmpFile.exists())
-                tmpFile.delete();
-            FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
-            fileOutputStream.write(data);
-            fileOutputStream.close();
+            writeData(file, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
     public byte[] getData() {
         byte[] tmpData = new byte[0];
         try {
-            FileInputStream fileInputStream = new FileInputStream(tmpFile);
-            tmpData = new byte[fileInputStream.available()];
-            fileInputStream.read(tmpData, 0, fileInputStream.available());
-            fileInputStream.close();
+            tmpData = readData(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         } finally {
             return tmpData;
         }
@@ -54,55 +47,37 @@ public class DataChunk extends Chunk {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append("[" + id + " DataChunk]: ");
-        str.append(getPrefix() + "/");
-        str.append(getName());
-        return str.toString();
+        return "SystemFile: /" + getPrefix() + "/" + getName();
     }
 
-    @Override
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = size - 16;
-        byte[] tmpData = new byte[dataSize];
-        reader.read(tmpData, 0, dataSize);
-
-        if (tmpFile.exists())
-            tmpFile.delete();
-        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
-        fileOutputStream.write(tmpData);
-        fileOutputStream.close();
+        byte[] data = new byte[dataSize];
+        reader.read(data, 0, dataSize);
+        writeData(file, data);
     }
 
-    @Override
     public void save(RandomAccessFile writer) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(tmpFile);
-        fileInputStream.available();
-        byte[] tmpData = new byte[fileInputStream.available()];
-        fileInputStream.read(tmpData, 0, fileInputStream.available());
-
+        byte[] data = readData(file);
         byte[] hash = new byte[16];
         try {
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
-            md5.update(tmpData);
-            hash = md5.digest();
+            hash = MessageDigest.getInstance("MD5").digest(data);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         writer.writeInt(Integer.reverseBytes(id));
-        writer.writeInt(Integer.reverseBytes(tmpData.length + 16));
+        writer.writeInt(Integer.reverseBytes(data.length + 16));
         writer.write(hash);
-        writer.write(tmpData);
+        writer.write(data);
     }
 
-    @Override
     public void export(String path) throws IOException {
         String prefix = getPrefix();
         String name = getName();
         Path tmpPath = Paths.get(path, prefix, name);
         tmpPath.getParent().toFile().mkdirs();
-        Files.copy(tmpFile.toPath(), tmpPath, REPLACE_EXISTING);
+        Files.copy(file.toPath(), tmpPath, REPLACE_EXISTING);
     }
 
     private String getName() {
@@ -158,7 +133,7 @@ public class DataChunk extends Chunk {
             case USER_KERNEL:
                 return "kernel";
             default:
-                return "";
+                return "unknown";
         }
     }
 

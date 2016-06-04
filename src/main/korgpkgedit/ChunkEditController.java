@@ -1,7 +1,7 @@
-package polprzewodnikowy.korgpkgedit;
+package korgpkgedit;
 
 import javafx.stage.Stage;
-import polprzewodnikowy.korgpkg.Chunk;
+import korgpkg.Chunk;
 
 /**
  * Created by korgeaux on 01.06.2016.
