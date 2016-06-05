@@ -133,7 +133,7 @@ block type == 0x00000100:
 |---|---|---|
 |int|4|block type|
 |int|4|compressed block size|
-|int|4|uncompressed block size (reversed byte condition)|
+|int|4|uncompressed block size (reversed byte order)|
 |byte|compressed block size - 4|data|
 
 block type == 0x00000101:
