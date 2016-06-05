@@ -5,7 +5,7 @@ Small program to provide easy way to edit, unpack and pack KORG Professional Arr
 Supported models:
 
 |model|mach id|product id|
-|---|
+|---|---|---|
 |Pa600|Z103A|0|
 |Pa900|Z104A|1|
 |Pa300|Z106A|2|
@@ -16,7 +16,7 @@ Supported models:
 #Supported chunks:
 
 |id|Name|
-|---|
+|---|---|
 |1|header|
 |2 - 14|system file|
 |15|installer script|
@@ -27,13 +27,13 @@ Supported models:
 #Unsupported chunks:
 
 |id|Name|
-|---|
+|---|---|
 |17|link|
 
 #System files:
 
 |id|type|path|
-|---|
+|---|---|---|
 |2|update kernel|/update/uImage|
 |3|update ramdisk|/update/ramdisk.gz|
 |4|update installer app|/update/lfo-pkg-install|
@@ -51,7 +51,7 @@ Supported models:
 #Header structure:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|12|unknown bytes|
@@ -66,7 +66,7 @@ Supported models:
 #System file structure:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
@@ -77,7 +77,7 @@ Supported models:
 #Installer script structure:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
@@ -90,7 +90,7 @@ Supported models:
 #Directory structure:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |short|2|owner|
@@ -102,7 +102,7 @@ Supported models:
 #File structure:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
@@ -120,7 +120,7 @@ Supported models:
 if compression type == 0 (raw data):
 
 |type|size|name|
-|---|
+|---|---|---|
 |byte|data size|data|
 
 else if compression type == 1 (zlib compression):
@@ -130,7 +130,7 @@ each file is divided in 1MB or smaller blocks
 block type == 0x00000100:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|block type|
 |int|4|compressed block size|
 |int|4|uncompressed block size (reversed byte order)|
@@ -139,7 +139,7 @@ block type == 0x00000100:
 block type == 0x00000101:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|block type|
 |int|4|0x00000000|
 
@@ -149,7 +149,7 @@ block type == 0x00000101:
 #File system structure:
 
 |type|size|name|
-|---|
+|---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
@@ -160,17 +160,19 @@ block type == 0x00000101:
 
 #Attributes
 
-`ATTR_VFAT_ARCHIVE`
-`ATTR_VFAT_READONLY`
-`ATTR_VFAT_SYSTEM`
-`ATTR_VFAT_HIDDEN`
-`ATTR_EXT3_OWNER_R`
-`ATTR_EXT3_OWNER_W`
-`ATTR_EXT3_OWNER_X`
-`ATTR_EXT3_GROUP_R`
-`ATTR_EXT3_GROUP_W`
-`ATTR_EXT3_GROUP_X`
-`ATTR_EXT3_OTHER_R`
-`ATTR_EXT3_OTHER_W`
-`ATTR_EXT3_OTHER_X`
-`ATTR_EXT3_DONT_CHANGE`
+|attribute|value|
+|---|---|
+|ATTR_VFAT_ARCHIVE|0x1000|
+|ATTR_VFAT_READONLY|0x2000|
+|ATTR_VFAT_SYSTEM|0x4000|
+|ATTR_VFAT_HIDDEN|0x8000|
+|ATTR_EXT3_OWNER_R|0x0100|
+|ATTR_EXT3_OWNER_W|0x0200|
+|ATTR_EXT3_OWNER_X|0x0400|
+|ATTR_EXT3_GROUP_R|0x0010|
+|ATTR_EXT3_GROUP_W|0x0020|
+|ATTR_EXT3_GROUP_X|0x0040|
+|ATTR_EXT3_OTHER_R|0x0001|
+|ATTR_EXT3_OTHER_W|0x0002|
+|ATTR_EXT3_OTHER_X|0x0004|
+|ATTR_EXT3_DONT_CHANGE|0xFFFF|
