@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?language javascript?>
-
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -9,41 +8,88 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="korgpkgedit.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1" fx:controller="korgpkgedit.MainController">
     <top>
         <MenuBar BorderPane.alignment="TOP_LEFT">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#openPkgAction" text="Open" />
-                        <MenuItem mnemonicParsing="false" onAction="#savePkgAction" text="Save" />
+                        <MenuItem mnemonicParsing="false" onAction="#openPkgAction" text="Open">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#savePkgAction" text="Save">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#closeAppAction" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeAppAction" text="Close">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#editChunkAction" text="Edit" />
-                        <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export" />
-                        <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove" />
+                        <MenuItem mnemonicParsing="false" onAction="#editChunkAction" text="Edit">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="R" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#moveUpChunkAction" text="Move up">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="F6" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#moveDownChunkAction" text="Move down">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="F5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Add">
                     <items>
-
-                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Header" fx:id="header" />
-                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Data" fx:id="data" />
-                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Installer script" fx:id="installerScript" />
-                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Directory" fx:id="directory" />
-                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="File" fx:id="file" />
-                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Root FS" fx:id="rootFS" />
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Header">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="System file">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Installer script">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Directory">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="File">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#addChunk" text="File system">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#showAboutAction" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#showAboutAction" text="About">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="F1" control="UP" meta="ANY" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                     </items>
                 </Menu>
             </menus>
@@ -55,8 +101,20 @@
                 <ContextMenu>
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#editChunkAction" text="Edit" />
+                        <Menu text="Add">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Header" />
+                                <MenuItem mnemonicParsing="false" onAction="#addChunk" text="System file" />
+                                <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Installer script" />
+                                <MenuItem mnemonicParsing="false" onAction="#addChunk" text="Directory" />
+                                <MenuItem mnemonicParsing="false" onAction="#addChunk" text="File" />
+                                <MenuItem mnemonicParsing="false" onAction="#addChunk" text="File system" />
+                            </items>
+                        </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#exportChunkAction" text="Export" />
                         <MenuItem mnemonicParsing="false" onAction="#removeChunkAction" text="Remove" />
+                        <MenuItem mnemonicParsing="false" onAction="#moveUpChunkAction" text="Move up" />
+                        <MenuItem mnemonicParsing="false" onAction="#moveDownChunkAction" text="Move down" />
                     </items>
                 </ContextMenu>
             </contextMenu>

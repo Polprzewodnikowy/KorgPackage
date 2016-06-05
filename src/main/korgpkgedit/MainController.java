@@ -18,6 +18,7 @@ import korgpkg.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,41 +38,20 @@ public class MainController {
     public MenuItem file;
     public MenuItem rootFS;
 
-    public void addChunk(ActionEvent e) {
-        Chunk chunk;
-        if (e.getSource().equals(header)) {
-            chunk = new HeaderChunk();
-        } else if (e.getSource().equals(data)) {
-            chunk = new DataChunk(Chunk.UPDATE_KERNEL);
-        } else if (e.getSource().equals(installerScript)) {
-            chunk = new InstallerScriptChunk();
-        } else if (e.getSource().equals(directory)) {
-            chunk = new DirectoryChunk();
-        } else if (e.getSource().equals(file)) {
-            chunk = new FileChunk();
-        } else if (e.getSource().equals(rootFS)) {
-            chunk = new RootFSChunk();
-        } else {
-            return;
-        }
-        Chunk c = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
-        if (c != null) {
-            int index = chunksListView.getSelectionModel().getSelectedIndex();
-            chunksListView.getItems().add(index, chunk);
-        } else {
-            chunksListView.getItems().add(chunk);
-        }
-    }
-
     public void setup(Stage stage) {
         this.stage = stage;
-        chunksListView.setItems(FXCollections.observableList(new ArrayList<Chunk>()));
+        chunksListView.setItems(FXCollections.observableArrayList(new ArrayList<Chunk>()));
     }
 
     public void refreshList() {
         ObservableList<Chunk> chunks = chunksListView.getItems();
-        chunksListView.setItems(null);
+        List<Integer> selected = new ArrayList<>();
+        chunksListView.getSelectionModel().getSelectedIndices().forEach((i) -> selected.add((Integer) i));
+        chunksListView.setItems(FXCollections.observableList(new ArrayList<Chunk>()));
         chunksListView.setItems(chunks);
+        for(Integer i: selected) {
+            chunksListView.getSelectionModel().select(i.intValue());
+        }
     }
 
     public void openPkgAction() {
@@ -84,7 +64,7 @@ public class MainController {
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             List<Chunk> chunks = new PackageReader(file).load();
-            chunksListView.setItems(FXCollections.observableList(chunks));
+            chunksListView.setItems(FXCollections.observableArrayList(chunks));
             statusLabel.setText("Finished reading package");
         }
     }
@@ -189,8 +169,59 @@ public class MainController {
     public void removeChunkAction() {
         Chunk chunk = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
         if (chunk != null) {
-            chunksListView.getItems().removeAll(chunksListView.getSelectionModel().getSelectedItems());
+            List<Chunk> chunks = chunksListView.getSelectionModel().getSelectedItems();
+            chunksListView.getItems().removeAll(chunks);
         }
+    }
+
+    public void moveUpChunkAction() {
+        if(chunksListView.getSelectionModel().getSelectedItem() != null) {
+            int pos = chunksListView.getSelectionModel().getSelectedIndex();
+            if(pos >= 1) {
+                Collections.swap(chunksListView.getItems(), pos - 1, pos);
+                chunksListView.getSelectionModel().clearAndSelect(pos - 1);
+            }
+        }
+    }
+
+    public void moveDownChunkAction() {
+        if(chunksListView.getSelectionModel().getSelectedItem() != null) {
+            int pos = chunksListView.getSelectionModel().getSelectedIndex();
+            if (pos < chunksListView.getItems().size() - 1) {
+                Collections.swap(chunksListView.getItems(), pos, pos + 1);
+                chunksListView.getSelectionModel().clearAndSelect(pos + 1);
+            }
+        }
+    }
+
+    public void addChunk(ActionEvent e) {
+        Chunk chunk;
+
+        MenuItem menuItem =  (MenuItem) e.getSource();
+        if (menuItem.getText().equals("Header")) {
+            chunk = new HeaderChunk();
+        } else if (menuItem.getText().equals("System file")) {
+            chunk = new DataChunk(Chunk.UPDATE_KERNEL);
+        } else if (menuItem.getText().equals("Installer script")) {
+            chunk = new InstallerScriptChunk();
+        } else if (menuItem.getText().equals("Directory")) {
+            chunk = new DirectoryChunk();
+        } else if (menuItem.getText().equals("File")) {
+            chunk = new FileChunk();
+        } else if (menuItem.getText().equals("File system")) {
+            chunk = new RootFSChunk();
+        } else {
+            return;
+        }
+        Chunk c = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
+        if (c != null) {
+            int index = chunksListView.getSelectionModel().getSelectedIndex();
+            chunksListView.getItems().add(index + 1, chunk);
+        } else {
+            chunksListView.getItems().add(chunk);
+        }
+        chunksListView.getSelectionModel().clearSelection();
+        chunksListView.getSelectionModel().select(chunk);
     }
 
     public void showAboutAction() {

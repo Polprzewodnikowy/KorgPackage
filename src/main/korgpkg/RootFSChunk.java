@@ -63,10 +63,9 @@ public class RootFSChunk extends Chunk {
 
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
-        reader.skipBytes(4);
+        int dataSize = Integer.reverseBytes(reader.readInt());
         reader.skipBytes(2);
         name = readString(reader);
-        int dataSize = size - 16 - 4 - 2 - name.length() - 1;
         byte[] data = new byte[dataSize];
         reader.read(data, 0, dataSize);
         writeData(file, data);
@@ -81,12 +80,17 @@ public class RootFSChunk extends Chunk {
             e.printStackTrace();
         }
         writer.writeInt(Integer.reverseBytes(id));
-        writer.writeInt(Integer.reverseBytes(data.length + 16 + 4 + 2 + name.length() + 1));
+        long offset = writer.getFilePointer();
+        writer.write(new byte[4]);
         writer.write(hash);
-        writer.writeInt(Integer.reverseBytes(data.length & 0xFFFFFF00));
-        writer.writeShort(0x0200);
+        writer.writeInt(Integer.reverseBytes(data.length));
+        writer.writeShort(Short.reverseBytes((short) 0x0002));
         writeString(writer, name);
         writer.write(data);
+
+        int size = (int) (writer.getFilePointer() - offset - 4);
+        writer.seek(offset);
+        writer.writeInt(Integer.reverseBytes(size));
     }
 
     public void export(String path) throws IOException {
