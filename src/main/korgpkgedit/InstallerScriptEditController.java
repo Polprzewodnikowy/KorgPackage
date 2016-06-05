@@ -22,15 +22,14 @@ public class InstallerScriptEditController implements ChunkEditController {
     byte[] data;
 
     public TextField name;
-    public TextField order;
+    public TextField condition;
 
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.installerScriptChunk = (InstallerScriptChunk) chunk;
         stage.setTitle(installerScriptChunk.toString());
         name.setText(installerScriptChunk.getName());
-        order.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-        order.setText(Integer.toString(installerScriptChunk.getOrder()));
+        condition.setText(Integer.toString(installerScriptChunk.getCondition()));
     }
 
     public void importDataAction() {
@@ -54,7 +53,7 @@ public class InstallerScriptEditController implements ChunkEditController {
 
     public void saveChunkAction() {
         installerScriptChunk.setName(name.getText());
-        installerScriptChunk.setOrder(Short.parseShort(order.getText()));
+        installerScriptChunk.setCondition(Short.parseShort(condition.getText()));
         if (data != null)
             installerScriptChunk.setData(data);
         stage.close();

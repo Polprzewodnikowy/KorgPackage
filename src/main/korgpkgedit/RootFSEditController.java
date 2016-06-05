@@ -19,13 +19,15 @@ public class RootFSEditController implements ChunkEditController {
     private RootFSChunk rootFSChunk;
     private byte[] data;
 
-    public TextField name;
+    public TextField condition;
+    public TextField path;
 
     public void setup(Stage stage, Chunk chunk) {
         this.stage = stage;
         this.rootFSChunk = (RootFSChunk) chunk;
         stage.setTitle(rootFSChunk.toString());
-        name.setText(rootFSChunk.getName());
+        condition.setText(Integer.toString(rootFSChunk.getCondition()));
+        path.setText(rootFSChunk.getPath());
     }
 
     public void importDataAction() {
@@ -48,7 +50,8 @@ public class RootFSEditController implements ChunkEditController {
     }
 
     public void saveChunkAction() {
-        rootFSChunk.setName(name.getText());
+        rootFSChunk.setCondition(Short.parseShort(condition.getText()));
+        rootFSChunk.setPath(path.getText());
         if (data != null)
             rootFSChunk.setData(data);
         stage.close();

@@ -16,11 +16,13 @@ public class RootFSChunk extends Chunk {
 
     private File file;
 
-    private String name;
+    private short condition;
+    private String path;
 
     public RootFSChunk() {
         id = ROOT_FS;
-        name = "";
+        condition = -1;
+        path = "/rootfs/user-release.tar";
         try {
             file = Files.createTempFile("", ".RootFSChunk").toFile();
             file.deleteOnExit();
@@ -29,12 +31,20 @@ public class RootFSChunk extends Chunk {
         }
     }
 
-    public String getName() {
-        return name;
+    public short getCondition() {
+        return condition;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCondition(short condition) {
+        this.condition = condition;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public void setData(byte[] data) {
@@ -58,14 +68,14 @@ public class RootFSChunk extends Chunk {
 
     @Override
     public String toString() {
-        return "FileSystem: " + name;
+        return "FileSystem: " + path;
     }
 
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
         int dataSize = Integer.reverseBytes(reader.readInt());
-        reader.skipBytes(2);
-        name = readString(reader);
+        condition = Short.reverseBytes(reader.readShort());
+        path = readString(reader);
         byte[] data = new byte[dataSize];
         reader.read(data, 0, dataSize);
         writeData(file, data);
@@ -84,8 +94,8 @@ public class RootFSChunk extends Chunk {
         writer.write(new byte[4]);
         writer.write(hash);
         writer.writeInt(Integer.reverseBytes(data.length));
-        writer.writeShort(Short.reverseBytes((short) 0x0002));
-        writeString(writer, name);
+        writer.writeShort(Short.reverseBytes(condition));
+        writeString(writer, path);
         writer.write(data);
 
         int size = (int) (writer.getFilePointer() - offset - 4);
@@ -94,7 +104,7 @@ public class RootFSChunk extends Chunk {
     }
 
     public void export(String path) throws IOException {
-        String tmpName = name.charAt(0) == '/' ? name.substring(1) : name;
+        String tmpName = this.path.charAt(0) == '/' ? this.path.substring(1) : this.path;
         Path tmpPath = Paths.get(path, tmpName);
         tmpPath.getParent().toFile().mkdirs();
         Files.copy(file.toPath(), tmpPath, REPLACE_EXISTING);

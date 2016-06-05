@@ -50,12 +50,12 @@ Supported models:
 
 #Header structure:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|12|unknown bytes|
-|string||mach_id and customization|
+|string||system type|
 |string||build system 1|
 |string||build system 2|
 |string||creation date|
@@ -65,7 +65,7 @@ Supported models:
 
 #System file structure:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
@@ -76,32 +76,32 @@ Supported models:
 
 #Installer script structure:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
-|short|2|order|
-|string||name|
+|short|2|condition|
+|string||path|
 |byte|data size|data|
 
-`data size = chunk size - 16 - 2 - (length of name + 1)`
+`data size = chunk size - 16 - 2 - (length of path + 1)`
 
 #Directory structure:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |short|2|owner|
 |short|2|group|
 |short|2|attributes|
-|short|2|order|
+|short|2|condition|
 |string||path|
 
 #File structure:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
@@ -109,7 +109,7 @@ Supported models:
 |short|2|owner|
 |short|2|group|
 |short|2|attributes|
-|short|2|order|
+|short|2|condition|
 |int|4|data size|
 |byte|1|compression type|
 |string||path|
@@ -119,7 +119,7 @@ Supported models:
 
 if compression type == 0 (raw data):
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |byte|data size|data|
 
@@ -129,16 +129,16 @@ each file is divided in 1MB or smaller blocks
 
 block type == 0x00000100:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|block type|
 |int|4|compressed block size|
-|int|4|uncompressed block size (reversed byte order)|
+|int|4|uncompressed block size (reversed byte condition)|
 |byte|compressed block size - 4|data|
 
 block type == 0x00000101:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|block type|
 |int|4|0x00000000|
@@ -148,13 +148,13 @@ block type == 0x00000101:
 
 #File system structure:
 
-|type|size|name|
+|type|size|path|
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
 |int|4|data size|
-|short|2|0x0002|
+|short|2|condition|
 |string||path|
 |byte|data size|data|
 

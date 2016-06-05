@@ -20,9 +20,9 @@ public class HeaderEditController implements ChunkEditController {
     private HeaderChunk headerChunk;
 
     public TextField unknown;
-    public TextField systemType1;
-    public TextField systemType2;
-    public TextField buildSystem;
+    public TextField systemType;
+    public TextField buildSystem1;
+    public TextField buildSystem2;
     public DateTimePicker dateTime;
     public TextField packageType1;
     public TextField packageType2;
@@ -32,18 +32,18 @@ public class HeaderEditController implements ChunkEditController {
         this.headerChunk = (HeaderChunk) chunk;
         stage.setTitle(headerChunk.toString());
         unknown.setText(DatatypeConverter.printHexBinary(headerChunk.getUnknown()));
-        systemType1.setText(headerChunk.getSystemType1());
-        systemType2.setText(headerChunk.getSystemType2());
-        buildSystem.setText(headerChunk.getBuildSystem());
+        systemType.setText(headerChunk.getSystemType());
+        buildSystem1.setText(headerChunk.getBuildSystem1());
+        buildSystem2.setText(headerChunk.getBuildSystem2());
         dateTime.setDateTimeValue(LocalDateTime.ofInstant(headerChunk.getDateTime().toInstant(), ZoneId.systemDefault()));
         packageType1.setText(headerChunk.getPackageType1());
         packageType2.setText(headerChunk.getPackageType2());
     }
 
     public void saveChunkAction() {
-        headerChunk.setSystemType1(systemType1.getText());
-        headerChunk.setSystemType2(systemType2.getText());
-        headerChunk.setBuildSystem(buildSystem.getText());
+        headerChunk.setSystemType(systemType.getText());
+        headerChunk.setBuildSystem1(buildSystem1.getText());
+        headerChunk.setBuildSystem2(buildSystem2.getText());
         headerChunk.setDateTime(Date.from(dateTime.getDateTimeValue().atZone(ZoneId.systemDefault()).toInstant()));
         headerChunk.setPackageType1(packageType1.getText());
         headerChunk.setPackageType2(packageType2.getText());

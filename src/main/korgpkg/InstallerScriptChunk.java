@@ -16,13 +16,13 @@ public class InstallerScriptChunk extends Chunk {
 
     private File file;
 
-    private short order;
+    private short condition;
     private String name;
 
     public InstallerScriptChunk() {
         id = INSTALLER_SCRIPT;
-        order = -1;
-        name = "";
+        condition = 0;
+        name = "script.sh";
         try {
             file = Files.createTempFile("", ".InstallerScriptChunk").toFile();
             file.deleteOnExit();
@@ -31,12 +31,12 @@ public class InstallerScriptChunk extends Chunk {
         }
     }
 
-    public short getOrder() {
-        return order;
+    public short getCondition() {
+        return condition;
     }
 
-    public void setOrder(short order) {
-        this.order = order;
+    public void setCondition(short condition) {
+        this.condition = condition;
     }
 
     public String getName() {
@@ -73,7 +73,7 @@ public class InstallerScriptChunk extends Chunk {
 
     public void load(RandomAccessFile reader, int size) throws IOException {
         reader.skipBytes(16);
-        order = Short.reverseBytes(reader.readShort());
+        condition = Short.reverseBytes(reader.readShort());
         name = readString(reader);
         int dataSize = size - 16 - 2 - name.length() - 1;
         byte[] data = new byte[dataSize];
@@ -92,7 +92,7 @@ public class InstallerScriptChunk extends Chunk {
         writer.writeInt(Integer.reverseBytes(id));
         writer.writeInt(Integer.reverseBytes(data.length + 16 + 2 + name.length() + 1));
         writer.write(hash);
-        writer.writeShort(Short.reverseBytes(order));
+        writer.writeShort(Short.reverseBytes(condition));
         writeString(writer, name);
         writer.write(data);
     }

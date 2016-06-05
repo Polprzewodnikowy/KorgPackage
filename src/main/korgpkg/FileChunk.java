@@ -28,7 +28,7 @@ public class FileChunk extends Chunk {
     private short owner;
     private short group;
     private short attributes;
-    private short order;
+    private short condition;
     private byte compressionType;
     private String name;
     private String date;
@@ -39,11 +39,11 @@ public class FileChunk extends Chunk {
         owner = 0;
         group = 0;
         attributes = ATTR_VFAT_ARCHIVE | ATTR_VFAT_READONLY | ATTR_VFAT_SYSTEM;
-        order = -1;
-        compressionType = COMPRESSION_RAW;
-        name = "";
-        date = "";
-        time = "";
+        condition = -1;
+        compressionType = COMPRESSION_ZLIB;
+        name = "/omega_sys/file";
+        date = "01/01/2016";
+        time = "12:00";
         try {
             file = Files.createTempFile("", ".FileChunk").toFile();
             file.deleteOnExit();
@@ -76,12 +76,12 @@ public class FileChunk extends Chunk {
         this.attributes = (short) attributes;
     }
 
-    public short getOrder() {
-        return order;
+    public short getCondition() {
+        return condition;
     }
 
-    public void setOrder(short order) {
-        this.order = order;
+    public void setCondition(short condition) {
+        this.condition = condition;
     }
 
     public byte getCompressionType() {
@@ -149,7 +149,7 @@ public class FileChunk extends Chunk {
         owner = Short.reverseBytes(reader.readShort());
         group = Short.reverseBytes(reader.readShort());
         attributes = Short.reverseBytes(reader.readShort());
-        order = Short.reverseBytes(reader.readShort());
+        condition = Short.reverseBytes(reader.readShort());
         int dataSize = Integer.reverseBytes(reader.readInt());
         compressionType = reader.readByte();
         name = readString(reader);
@@ -215,7 +215,7 @@ public class FileChunk extends Chunk {
         writer.writeShort(Short.reverseBytes(owner));
         writer.writeShort(Short.reverseBytes(group));
         writer.writeShort(Short.reverseBytes(attributes));
-        writer.writeShort(Short.reverseBytes(order));
+        writer.writeShort(Short.reverseBytes(condition));
         writer.writeInt(Integer.reverseBytes((int) file.length()));
         writer.writeByte(compressionType);
         writeString(writer, name);

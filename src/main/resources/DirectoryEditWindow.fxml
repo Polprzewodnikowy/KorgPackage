@@ -9,23 +9,23 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <Label text="Path:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <Label text="Attributes:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <Label text="Group/Owner:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <Label text="Order:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <Label text="Condition:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
 
-    <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
+    <TextField fx:id="path" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
     <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="400">
         <CheckBox fx:id="attrA" text="A"/>
         <CheckBox fx:id="attrR" text="R"/>
-        <CheckBox fx:id="attrH" text="H"/>
         <CheckBox fx:id="attrS" text="S"/>
+        <CheckBox fx:id="attrH" text="H"/>
     </HBox>
     <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400">
         <TextField fx:id="group"/>
         <TextField fx:id="owner"/>
     </HBox>
-    <TextField fx:id="order" GridPane.columnIndex="1" GridPane.rowIndex="3" minWidth="400"/>
+    <TextField fx:id="condition" GridPane.columnIndex="1" GridPane.rowIndex="3" minWidth="400"/>
 
     <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4" minWidth="400" alignment="BASELINE_RIGHT">
         <Button text="OK" onAction="#saveChunkAction"/>

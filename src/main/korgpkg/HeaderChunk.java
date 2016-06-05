@@ -14,9 +14,9 @@ import java.util.Date;
 public class HeaderChunk extends Chunk {
 
     private byte[] unknown;
-    private String systemType1;
-    private String systemType2;
-    private String buildSystem;
+    private String systemType;
+    private String buildSystem1;
+    private String buildSystem2;
     private String date;
     private String time;
     private String packageType1;
@@ -24,14 +24,14 @@ public class HeaderChunk extends Chunk {
 
     public HeaderChunk() {
         id = HEADER;
-        unknown = new byte[12];
-        systemType1 = "";
-        systemType2 = "";
-        buildSystem = "";
-        date = "";
-        time = "";
-        packageType1 = "";
-        packageType2 = "";
+        unknown = new byte[]{3, 6, 4, 3, 3, 0, 0, 0, 2, 0, 1, 0};
+        systemType = "103ASTD";
+        buildSystem1 = "KORG-SW1";
+        buildSystem2 = "WorkHorse2";
+        date = "01/01/2014";
+        time = "12:00";
+        packageType1 = "Z103A package";
+        packageType2 = " user package";
     }
 
     public void setUnknown(byte[] unknown) {
@@ -42,28 +42,28 @@ public class HeaderChunk extends Chunk {
         return unknown;
     }
 
-    public void setPackageType1(String packageType1) {
-        this.packageType1 = packageType1;
+    public void setSystemType(String systemType) {
+        this.systemType = systemType;
     }
 
-    public String getPackageType1() {
-        return packageType1;
+    public String getSystemType() {
+        return systemType;
     }
 
-    public void setPackageType2(String packageType2) {
-        this.packageType2 = packageType2;
+    public void setBuildSystem1(String buildSystem1) {
+        this.buildSystem1 = buildSystem1;
     }
 
-    public String getPackageType2() {
-        return packageType2;
+    public String getBuildSystem1() {
+        return buildSystem1;
     }
 
-    public void setBuildSystem(String buildSystem) {
-        this.buildSystem = buildSystem;
+    public void setBuildSystem2(String buildSystem2) {
+        this.buildSystem2 = buildSystem2;
     }
 
-    public String getBuildSystem() {
-        return buildSystem;
+    public String getBuildSystem2() {
+        return buildSystem2;
     }
 
     public Date getDateTime() {
@@ -82,33 +82,33 @@ public class HeaderChunk extends Chunk {
         this.time = String.format("%tH:%<tM", date);
     }
 
-    public void setSystemType1(String systemType1) {
-        this.systemType1 = systemType1;
+    public void setPackageType1(String packageType1) {
+        this.packageType1 = packageType1;
     }
 
-    public String getSystemType1() {
-        return systemType1;
+    public String getPackageType1() {
+        return packageType1;
     }
 
-    public void setSystemType2(String systemType2) {
-        this.systemType2 = systemType2;
+    public void setPackageType2(String packageType2) {
+        this.packageType2 = packageType2;
     }
 
-    public String getSystemType2() {
-        return systemType2;
+    public String getPackageType2() {
+        return packageType2;
     }
 
     @Override
     public String toString() {
-        return "Header: " + systemType1 + " " + date + " " + time;
+        return "Header: " + systemType + " " + date + " " + time;
     }
 
     public void load(RandomAccessFile reader, int size) throws IOException {
         unknown = new byte[12];
         reader.read(unknown, 0, 12);
-        systemType1 = readString(reader);
-        systemType2 = readString(reader);
-        buildSystem = readString(reader);
+        systemType = readString(reader);
+        buildSystem1 = readString(reader);
+        buildSystem2 = readString(reader);
         date = readString(reader);
         time = readString(reader);
         packageType1 = readString(reader);
@@ -120,9 +120,9 @@ public class HeaderChunk extends Chunk {
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
         writer.write(unknown);
-        writeString(writer, systemType1);
-        writeString(writer, systemType2);
-        writeString(writer, buildSystem);
+        writeString(writer, systemType);
+        writeString(writer, buildSystem1);
+        writeString(writer, buildSystem2);
         writeString(writer, date);
         writeString(writer, time);
         writeString(writer, packageType1);
@@ -137,9 +137,9 @@ public class HeaderChunk extends Chunk {
         tmpPath.getParent().toFile().mkdirs();
         FileWriter fileWriter = new FileWriter(tmpPath.toFile());
         fileWriter.write(DatatypeConverter.printHexBinary(unknown) + "\r\n");
-        fileWriter.write(systemType1 + "\r\n");
-        fileWriter.write(systemType2 + "\r\n");
-        fileWriter.write(buildSystem + "\r\n");
+        fileWriter.write(systemType + "\r\n");
+        fileWriter.write(buildSystem1 + "\r\n");
+        fileWriter.write(buildSystem2 + "\r\n");
         fileWriter.write(date + "\r\n");
         fileWriter.write(time + "\r\n");
         fileWriter.write(packageType1 + "\r\n");
