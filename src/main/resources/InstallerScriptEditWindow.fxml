@@ -9,10 +9,11 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
+
     <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <Label text="Condition:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
-    <TextField fx:id="path" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
+    <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400"/>
     <TextField fx:id="condition" GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="400"/>
 
     <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400" alignment="BASELINE_RIGHT">

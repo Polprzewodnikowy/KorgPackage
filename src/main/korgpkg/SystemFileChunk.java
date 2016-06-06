@@ -12,14 +12,14 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 /**
  * Created by korgeaux on 29.05.2016.
  */
-public class DataChunk extends Chunk {
+public class SystemFileChunk extends Chunk {
 
     private File file;
 
-    public DataChunk(int id) {
+    public SystemFileChunk(int id) {
         this.id = id;
         try {
-            file = Files.createTempFile("", ".DataChunk").toFile();
+            file = Files.createTempFile("", ".SystemFileChunk").toFile();
             file.deleteOnExit();
         } catch (IOException e) {
             System.err.println(e.getMessage());

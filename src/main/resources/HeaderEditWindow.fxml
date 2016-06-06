@@ -10,6 +10,7 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
+
     <Label text="Unknown:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <Label text="System type:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <Label text="Build system 1:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
@@ -18,7 +19,7 @@
     <Label text="Package type 1:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
     <Label text="Package type 2:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
 
-    <TextField fx:id="unknown" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400" disable="true" editable="false"/>
+    <TextField fx:id="unknown" GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="400" disable="true"/>
     <TextField fx:id="systemType" GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="400"/>
     <TextField fx:id="buildSystem1" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400"/>
     <TextField fx:id="buildSystem2" GridPane.columnIndex="1" GridPane.rowIndex="3" minWidth="400"/>

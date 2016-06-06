@@ -5,13 +5,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.*?>
 <?import tornadofx.control.DateTimePicker?>
-
 <?import java.lang.String?>
+
 <GridPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="korgpkgedit.FileEditController" vgap="10" hgap="10">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
+
     <Label text="Path:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <Label text="Date/Time:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <Label text="Compression:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
@@ -24,8 +25,8 @@
     <ChoiceBox fx:id="compressionType" GridPane.columnIndex="1" GridPane.rowIndex="2" minWidth="400">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="RAW" />
-                <String fx:value="zlib" />
+                <String fx:value="RAW"/>
+                <String fx:value="zlib"/>
             </FXCollections>
         </items>
     </ChoiceBox>

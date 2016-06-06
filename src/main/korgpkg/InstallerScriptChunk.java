@@ -21,7 +21,7 @@ public class InstallerScriptChunk extends Chunk {
 
     public InstallerScriptChunk() {
         id = INSTALLER_SCRIPT;
-        condition = 0;
+        condition = -1;
         name = "script.sh";
         try {
             file = Files.createTempFile("", ".InstallerScriptChunk").toFile();

@@ -99,7 +99,7 @@ public class PackageReader {
                     case Chunk.MLO:
                     case Chunk.UBOOT:
                     case Chunk.USER_KERNEL:
-                        chunks.add(new DataChunk(id));
+                        chunks.add(new SystemFileChunk(id));
                         break;
                     case Chunk.INSTALLER_SCRIPT:
                         chunks.add(new InstallerScriptChunk());

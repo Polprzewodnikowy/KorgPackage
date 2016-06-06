@@ -9,6 +9,7 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
+
     <Label text="Path:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <Label text="Attributes:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <Label text="Group/Owner:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
