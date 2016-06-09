@@ -32,15 +32,15 @@ public abstract class Chunk {
     public final static int ATTR_VFAT_SYSTEM = 0x4000;
     public final static int ATTR_VFAT_HIDDEN = 0x8000;
 
-    public final static int ATTR_EXT3_OWNER_R = 0x0100;
-    public final static int ATTR_EXT3_OWNER_W = 0x0200;
-    public final static int ATTR_EXT3_OWNER_X = 0x0400;
-    public final static int ATTR_EXT3_GROUP_R = 0x0010;
-    public final static int ATTR_EXT3_GROUP_W = 0x0020;
-    public final static int ATTR_EXT3_GROUP_X = 0x0040;
-    public final static int ATTR_EXT3_OTHER_R = 0x0001;
-    public final static int ATTR_EXT3_OTHER_W = 0x0002;
-    public final static int ATTR_EXT3_OTHER_X = 0x0004;
+    public final static int ATTR_EXT3_OWNER_R = (1 << 6);
+    public final static int ATTR_EXT3_OWNER_W = (2 << 6);
+    public final static int ATTR_EXT3_OWNER_X = (4 << 6);
+    public final static int ATTR_EXT3_GROUP_R = (1 << 3);
+    public final static int ATTR_EXT3_GROUP_W = (2 << 3);
+    public final static int ATTR_EXT3_GROUP_X = (4 << 3);
+    public final static int ATTR_EXT3_OTHER_R = (1 << 0);
+    public final static int ATTR_EXT3_OTHER_W = (2 << 0);
+    public final static int ATTR_EXT3_OTHER_X = (4 << 0);
 
     public final static int ATTR_EXT3_DONT_CHANGE = 0xFFFF;
 
