@@ -54,14 +54,18 @@ Supported models:
 |---|---|---|
 |int|4|id|
 |int|4|chunk size|
-|byte|12|unknown bytes|
-|string||system type|
-|string||build system 1|
-|string||build system 2|
-|string||creation date|
-|string||creation time|
-|string||package type 1|
-|string||package type 2|
+|byte|4|pkg lib version|
+|int|4|upgrade/full flag|
+|short|4|2 unknown shorts|
+|string|*|system type (mach_id/customization)|
+|string|*|build system 1|
+|string|*|build system 2|
+|string|*|creation date|
+|string|*|creation time|
+|string|*|package type 1|
+|string|*|package type 2|
+
+`2 = upgrade | 3 = full instalation`
 
 #System file structure:
 
@@ -82,7 +86,7 @@ Supported models:
 |int|4|chunk size|
 |byte|16|MD5 sum of data|
 |short|2|condition|
-|string||path|
+|string|*|path|
 |byte|data size|data|
 
 `data size = chunk size - 16 - 2 - (length of path + 1)`
@@ -97,7 +101,7 @@ Supported models:
 |short|2|group|
 |short|2|attributes|
 |short|2|condition|
-|string||path|
+|string|*|path|
 
 #File structure:
 
@@ -111,11 +115,11 @@ Supported models:
 |short|2|attributes|
 |short|2|condition|
 |int|4|data size|
-|byte|1|compression type|
-|string||path|
-|string||date|
-|string||time|
-|data|||
+|byte|1|compression/encryption type|
+|string|*|path|
+|string|*|date|
+|string|*|time|
+|byte|*|data|
 
 if compression type == 0 (raw data):
 
@@ -146,6 +150,8 @@ block type == 0x00000101:
 `block type = 0x00000100 -> data block`
 `block type = 0x00000101 -> ending block`
 
+else if compression type == 16 (encryption)
+
 #File system structure:
 
 |type|size|path|
@@ -155,7 +161,7 @@ block type == 0x00000101:
 |byte|16|MD5 sum of data|
 |int|4|data size|
 |short|2|condition|
-|string||path|
+|string|*|path|
 |byte|data size|data|
 
 #Attributes

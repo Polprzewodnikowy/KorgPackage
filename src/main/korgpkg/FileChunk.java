@@ -22,6 +22,7 @@ public class FileChunk extends Chunk {
 
     public final static byte COMPRESSION_RAW = 0;
     public final static byte COMPRESSION_ZLIB = 1;
+    public final static byte ENCRYPTED = 16;
 
     private File file;
 
@@ -33,9 +34,11 @@ public class FileChunk extends Chunk {
     private String name;
     private String date;
     private String time;
+    private int size;
 
-    public FileChunk() {
+    public FileChunk(int size) {
         id = FILE;
+        this.size = size;
         owner = 0;
         group = 0;
         attributes = ATTR_VFAT_ARCHIVE | ATTR_VFAT_READONLY | ATTR_VFAT_SYSTEM;
@@ -160,6 +163,11 @@ public class FileChunk extends Chunk {
             byte[] tmpData = new byte[dataSize];
             reader.read(tmpData, 0, dataSize);
             fileOutputStream.write(tmpData);
+        } else if (compressionType == ENCRYPTED) {
+            int tmpSize = size - 29 - name.length() - date.length() - time.length() - 3;
+            byte[] tmpData = new byte[tmpSize];
+            reader.read(tmpData, 0, tmpSize);
+            fileOutputStream.write(tmpData);
         } else if (compressionType == COMPRESSION_ZLIB) {
             while (true) {
                 int blockType = Integer.reverseBytes(reader.readInt());
@@ -222,7 +230,7 @@ public class FileChunk extends Chunk {
         writeString(writer, date);
         writeString(writer, time);
 
-        if (compressionType == COMPRESSION_RAW) {
+        if (compressionType == COMPRESSION_RAW || compressionType == ENCRYPTED) {
             byte[] data = new byte[0x100000];
             while (fileInputStream.available() > 0) {
                 int bytes = fileInputStream.read(data, 0, 0x100000);

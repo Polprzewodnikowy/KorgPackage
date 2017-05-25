@@ -6,14 +6,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.StringJoiner;
 
 /**
  * Created by korgeaux on 08.05.2016.
  */
 public class HeaderChunk extends Chunk {
 
-    private byte[] unknown;
+    public static final int PKG_TYPE_UPDATE = 2;
+    public static final int PKG_TYPE_FULL = 3;
+
+    private byte[] pkgLibVersion;
+    private int pkgType;
+    private short[] unknown;
     private String systemType;
     private String buildSystem1;
     private String buildSystem2;
@@ -24,7 +31,9 @@ public class HeaderChunk extends Chunk {
 
     public HeaderChunk() {
         id = HEADER;
-        unknown = new byte[]{3, 6, 4, 3, 3, 0, 0, 0, 2, 0, 1, 0};
+        pkgLibVersion = new byte[]{3, 6, 4, 3};
+        pkgType = PKG_TYPE_UPDATE;
+        unknown = new short[]{2, 1};
         systemType = "103ASTD";
         buildSystem1 = "KORG-SW1";
         buildSystem2 = "WorkHorse2";
@@ -34,11 +43,27 @@ public class HeaderChunk extends Chunk {
         packageType2 = " user package";
     }
 
-    public void setUnknown(byte[] unknown) {
+    public void setPkgLibVersion(byte v1, byte v2, byte v3, byte v4) {
+        pkgLibVersion = new byte[]{v1, v2, v3, v4};
+    }
+
+    public byte[] getPkgLibVersion() {
+        return pkgLibVersion;
+    }
+
+    public void setPkgType(int type) {
+        pkgType = type;
+    }
+
+    public int getPkgType() {
+        return pkgType;
+    }
+
+    public void setUnknown(short[] unknown) {
         this.unknown = unknown;
     }
 
-    public byte[] getUnknown() {
+    public short[] getUnknown() {
         return unknown;
     }
 
@@ -104,8 +129,12 @@ public class HeaderChunk extends Chunk {
     }
 
     public void load(RandomAccessFile reader, int size) throws IOException {
-        unknown = new byte[12];
-        reader.read(unknown, 0, 12);
+        pkgLibVersion = new byte[4];
+        reader.read(pkgLibVersion, 0, 4);
+        pkgType = Integer.reverseBytes(reader.readInt());
+        unknown = new short[2];
+        unknown[0] = Short.reverseBytes(reader.readShort());
+        unknown[1] = Short.reverseBytes(reader.readShort());
         systemType = readString(reader);
         buildSystem1 = readString(reader);
         buildSystem2 = readString(reader);
@@ -119,7 +148,10 @@ public class HeaderChunk extends Chunk {
         writer.writeInt(Integer.reverseBytes(id));
         long offset = writer.getFilePointer();
         writer.write(new byte[4]);
-        writer.write(unknown);
+        writer.write(pkgLibVersion);
+        writer.writeInt(Integer.reverseBytes(pkgType));
+        writer.writeShort(Short.reverseBytes(unknown[0]));
+        writer.writeShort(Short.reverseBytes(unknown[1]));
         writeString(writer, systemType);
         writeString(writer, buildSystem1);
         writeString(writer, buildSystem2);
@@ -136,7 +168,14 @@ public class HeaderChunk extends Chunk {
         Path tmpPath = Paths.get(path, "Header.txt");
         tmpPath.getParent().toFile().mkdirs();
         FileWriter fileWriter = new FileWriter(tmpPath.toFile());
-        fileWriter.write(DatatypeConverter.printHexBinary(unknown) + "\r\n");
+        fileWriter.write("PkgLib version: " + pkgLibVersion[0] + "." + pkgLibVersion[1] + "." + pkgLibVersion[2] + "." + pkgLibVersion[3] + "\r\n");
+        if(pkgType == PKG_TYPE_UPDATE)
+            fileWriter.write("Update package: 2" + "\r\n");
+        else if(pkgType == PKG_TYPE_FULL)
+            fileWriter.write("FULL package: 3" + "\r\n");
+        else
+            fileWriter.write("Unknown package type: " + pkgType + "\r\n");
+        fileWriter.write("[" + unknown[0] + ", " + unknown[1] + "]\r\n");
         fileWriter.write(systemType + "\r\n");
         fileWriter.write(buildSystem1 + "\r\n");
         fileWriter.write(buildSystem2 + "\r\n");

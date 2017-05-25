@@ -31,7 +31,10 @@ public class MainController {
     public ListView chunksListView;
     public Label statusLabel;
 
+    public File lastFileChooserPath;
+
     public void setup(Stage stage) {
+
         this.stage = stage;
         chunksListView.setItems(FXCollections.observableArrayList(new ArrayList<Chunk>()));
     }
@@ -49,13 +52,15 @@ public class MainController {
 
     public void openPkgAction() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open pkg File");
+        fileChooser.setInitialDirectory(lastFileChooserPath);
+        fileChooser.setTitle("Open PKG/UPD File");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PKG file", "*.pkg"),
+                new FileChooser.ExtensionFilter("PKG/UPD file", "*.pkg", "*.upd"),
                 new FileChooser.ExtensionFilter("All files", "*.*")
         );
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
+            lastFileChooserPath = file.getParentFile();
             List<Chunk> chunks = new PackageReader(file).load();
             chunksListView.setItems(FXCollections.observableArrayList(chunks));
             statusLabel.setText("Finished reading package");
@@ -64,13 +69,15 @@ public class MainController {
 
     public void savePkgAction() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save pkg File");
+        fileChooser.setInitialDirectory(lastFileChooserPath);
+        fileChooser.setTitle("Save PKG/UPD File");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PKG file", "*.pkg"),
+                new FileChooser.ExtensionFilter("PKG/UPD file", "*.pkg", "*.upd"),
                 new FileChooser.ExtensionFilter("All files", "*.*")
         );
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
+            lastFileChooserPath = file.getParentFile();
             PackageWriter packageWriter = new PackageWriter(file);
             List<Chunk> chunks = new ArrayList<>(chunksListView.getItems());
             packageWriter.save(chunks);
@@ -141,13 +148,15 @@ public class MainController {
     public void exportChunkAction() {
         Chunk chunk = (Chunk) chunksListView.getSelectionModel().getSelectedItem();
         if (chunk != null) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save File");
+//            FileChooser fileChooser = new FileChooser();
+//            fileChooser.setTitle("Save File");
             DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setInitialDirectory(lastFileChooserPath);
             directoryChooser.setTitle("Choose directory");
             File dir = directoryChooser.showDialog(stage);
             if (dir != null) {
                 try {
+                    lastFileChooserPath = dir;
                     ObservableList<Chunk> chunks = chunksListView.getSelectionModel().getSelectedItems();
                     for (Chunk c : chunks) {
                         c.export(dir.getPath());
@@ -199,7 +208,7 @@ public class MainController {
         } else if (menuItem.getText().equals("Directory")) {
             chunk = new DirectoryChunk();
         } else if (menuItem.getText().equals("File")) {
-            chunk = new FileChunk();
+            chunk = new FileChunk(0);
         } else if (menuItem.getText().equals("File system")) {
             chunk = new RootFSChunk();
         } else {

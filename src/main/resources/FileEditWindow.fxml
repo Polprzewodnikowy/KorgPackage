@@ -27,6 +27,7 @@
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="RAW"/>
                 <String fx:value="zlib"/>
+                <String fx:value="Encrypted"/>
             </FXCollections>
         </items>
     </ChoiceBox>

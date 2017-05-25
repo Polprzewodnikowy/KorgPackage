@@ -42,7 +42,18 @@ public class FileEditController implements ChunkEditController {
         stage.setTitle(fileChunk.toString());
         path.setText(fileChunk.getName());
         date.setDateTimeValue(LocalDateTime.ofInstant(fileChunk.getDateTime().toInstant(), ZoneId.systemDefault()));
-        compressionType.getSelectionModel().select(fileChunk.getCompressionType());
+        byte compression = fileChunk.getCompressionType();
+        switch (compression) {
+            case FileChunk.COMPRESSION_RAW:
+                compressionType.getSelectionModel().select(0);
+                break;
+            case FileChunk.COMPRESSION_ZLIB:
+                compressionType.getSelectionModel().select(1);
+                break;
+            case FileChunk.ENCRYPTED:
+                compressionType.getSelectionModel().select(2);
+                break;
+        }
         int attr = fileChunk.getAttributes();
         if ((attr & FileChunk.ATTR_VFAT_ARCHIVE) != 0)
             attrA.setSelected(true);
@@ -79,7 +90,18 @@ public class FileEditController implements ChunkEditController {
     public void saveChunkAction() {
         fileChunk.setName(path.getText());
         fileChunk.setDateTime(Date.from(date.getDateTimeValue().atZone(ZoneId.systemDefault()).toInstant()));
-        fileChunk.setCompressionType((byte) compressionType.getSelectionModel().getSelectedIndex());
+        int compression = compressionType.getSelectionModel().getSelectedIndex();
+        switch (compression) {
+            case 0:
+                fileChunk.setCompressionType(FileChunk.COMPRESSION_RAW);
+                break;
+            case 1:
+                fileChunk.setCompressionType(FileChunk.COMPRESSION_ZLIB);
+                break;
+            case 2:
+                fileChunk.setCompressionType(FileChunk.ENCRYPTED);
+                break;
+        }
         int attr = 0;
         if (attrA.isSelected())
             attr |= FileChunk.ATTR_VFAT_ARCHIVE;
