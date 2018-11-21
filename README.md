@@ -12,6 +12,9 @@ Supported models:
 |Pa3XLe|Z107A|3|
 |Havian 30|Z108A|4|
 |Pa4X|Z110A|5|
+|Pa700|Z111A|7|
+|Pa1000|Z112A|8|
+|?????|Z113A|9|
 
 #Supported chunks:
 
