@@ -14,7 +14,7 @@ Supported models:
 |Pa4X|Z110A|5|
 |Pa700|Z111A|7|
 |Pa1000|Z112A|8|
-|?????|Z113A|9|
+|Pa700 Oriental|Z113A|9|
 
 #Supported chunks:
 
