@@ -13,7 +13,7 @@ Supported models:
 |Havian 30|Z108A|4|
 |Pa4X|Z110A|5|
 
-#Supported chunks:
+# Supported chunks:
 
 |id|Name|
 |---|---|
@@ -24,13 +24,13 @@ Supported models:
 |18|file|
 |19|file system (rootfs)|
 
-#Unsupported chunks:
+# Unsupported chunks:
 
 |id|Name|
 |---|---|
 |17|link|
 
-#System files:
+# System files:
 
 |id|type|path|
 |---|---|---|
@@ -48,7 +48,7 @@ Supported models:
 |13|2nd stage bootloader (u-boot)|/boot/u-boot.bin|
 |14|user kernel|/kernel/uImage|
 
-#Header structure:
+# Header structure:
 
 |type|size|path|
 |---|---|---|
@@ -67,7 +67,7 @@ Supported models:
 
 `2 = upgrade | 3 = full instalation`
 
-#System file structure:
+# System file structure:
 
 |type|size|path|
 |---|---|---|
@@ -78,7 +78,7 @@ Supported models:
 
 `data size = chunk size - 16`
 
-#Installer script structure:
+# Installer script structure:
 
 |type|size|path|
 |---|---|---|
@@ -91,7 +91,7 @@ Supported models:
 
 `data size = chunk size - 16 - 2 - (length of path + 1)`
 
-#Directory structure:
+# Directory structure:
 
 |type|size|path|
 |---|---|---|
@@ -103,7 +103,7 @@ Supported models:
 |short|2|condition|
 |string|*|path|
 
-#File structure:
+# File structure:
 
 |type|size|path|
 |---|---|---|
@@ -152,7 +152,7 @@ block type == 0x00000101:
 
 else if compression type == 16 (encryption)
 
-#File system structure:
+# File system structure:
 
 |type|size|path|
 |---|---|---|
@@ -164,7 +164,7 @@ else if compression type == 16 (encryption)
 |string|*|path|
 |byte|data size|data|
 
-#Attributes
+# Attributes
 
 |attribute|value|
 |---|---|
